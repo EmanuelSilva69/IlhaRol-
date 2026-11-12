@@ -1,0 +1,29 @@
+.event-map {
+  width: 100%;
+  min-height: 420px;
+  height: 50vh;
+  overflow: hidden;
+  border: 1px solid #000000;
+  background: #e5e5e5;
+}
+
+.event-map.leaflet-container {
+  font-family: inherit;
+}
+
+.event-map[data-theme="dark"] {
+  background: #0f172a;
+}
+
+.event-map[data-theme="thematic"] .leaflet-tile-pane {
+  filter: hue-rotate(200deg) saturate(1.35) contrast(1.05);
+}
+
+.event-marker {
+  background: transparent;
+  border: 0;
+}
+
+.event-map .leaflet-control-attribution {
+  font-size: 10px;
+}
