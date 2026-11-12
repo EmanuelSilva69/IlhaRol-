@@ -25,10 +25,10 @@
 
 ## 4. Git e publicação no GitHub
 
-- [ ] 4.1 Copiar `documentos/` do repositório remoto para o projeto local e mover os PDFs locais para `documentos/DocuIniciais/`; verificar que nenhum documento existente foi perdido.
-- [ ] 4.2 Adicionar `.opencode/` ao `.gitignore`, inicializar o Git local, configurar `origin` e anexar o histórico de `origin/main`; verificar com `git log --oneline -3` e `git status`.
-- [ ] 4.3 Revisar o que será commitado (`git status`, `git diff --stat`), garantir que `.env`, `node_modules`, `dist` e `.opencode/` estão fora e criar um único commit com `devops/`, `backend/` e `frontend/`.
-- [ ] 4.4 Enviar o commit para `origin/main`; verificar com `git ls-remote origin refs/heads/main` e confirmar que o commit local está no remoto.
+- [x] 4.1 Copiar `documentos/` do repositório remoto para o projeto local e mover os PDFs locais para `documentos/DocuIniciais/`; verificar que nenhum documento existente foi perdido.
+- [x] 4.2 Adicionar `.opencode/` ao `.gitignore`, inicializar o Git local, configurar `origin` e anexar o histórico de `origin/main`; verificar com `git log --oneline -3` e `git status`.
+- [x] 4.3 Revisar o que será commitado (`git status`, `git diff --stat`), garantir que `.env`, `node_modules`, `dist` e `.opencode/` estão fora e criar um único commit com `devops/`, `backend/` e `frontend/`.
+- [x] 4.4 Enviar o commit para `origin/main`; verificar com `git ls-remote origin refs/heads/main` e confirmar que o commit local está no remoto.
 
 ## Workflow follow-up
 
