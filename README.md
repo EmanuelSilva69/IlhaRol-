@@ -193,3 +193,6 @@ Verificação executada em 12/11/2026:
 ## Publicação
 
 Repositório: https://github.com/EmanuelSilva69/IlhaRol-
+
+## Comentários
+- Emanuel -> deixei o openspec ai pois ele é legal de ver os planos e oq falta fazer, se quiserem usar ele, façam um novo planejamento e vão botando lá, fica mais fácil de rastrear oq a ia fez e tal
