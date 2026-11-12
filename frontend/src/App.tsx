@@ -103,37 +103,6 @@ function App() {
 
         <section className="space-y-6">
           <div className="border-2 border-dashed border-black p-4">
-            <div className="flex items-end justify-between gap-4">
-              <div>
-                <h2 className="text-xs font-black uppercase tracking-widest">
-                  Feed de eventos
-                </h2>
-                <p className="mt-1 text-[10px] uppercase text-neutral-500">
-                  Possível local de informação
-                </p>
-              </div>
-              <span className="border border-black px-2 py-1 text-[10px] font-bold uppercase">
-                Ordenar
-              </span>
-            </div>
-
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
-              {PLACEHOLDER_CARDS.map((card) => (
-                <article key={card} className="border border-black p-3">
-                  <div className="flex h-24 items-center justify-center border border-dashed border-neutral-400 bg-neutral-100 text-[10px] font-bold uppercase text-neutral-400">
-                    Imagem do evento
-                  </div>
-                  <div className="mt-3 h-3 w-3/4 bg-neutral-300" />
-                  <div className="mt-2 h-3 w-1/2 bg-neutral-200" />
-                  <p className="mt-3 text-[10px] uppercase text-neutral-500">
-                    Possível local de informação
-                  </p>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <div className="border-2 border-dashed border-black p-4">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
                 <h2 className="text-xs font-black uppercase tracking-widest">
@@ -169,6 +138,37 @@ function App() {
 
             <div className="mt-3">
               <EventMap events={SAMPLE_EVENTS} theme={theme} />
+            </div>
+          </div>
+
+          <div className="border-2 border-dashed border-black p-4">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <h2 className="text-xs font-black uppercase tracking-widest">
+                  Feed de eventos
+                </h2>
+                <p className="mt-1 text-[10px] uppercase text-neutral-500">
+                  Possível local de informação
+                </p>
+              </div>
+              <span className="border border-black px-2 py-1 text-[10px] font-bold uppercase">
+                Ordenar
+              </span>
+            </div>
+
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              {PLACEHOLDER_CARDS.map((card) => (
+                <article key={card} className="border border-black p-3">
+                  <div className="flex h-24 items-center justify-center border border-dashed border-neutral-400 bg-neutral-100 text-[10px] font-bold uppercase text-neutral-400">
+                    Imagem do evento
+                  </div>
+                  <div className="mt-3 h-3 w-3/4 bg-neutral-300" />
+                  <div className="mt-2 h-3 w-1/2 bg-neutral-200" />
+                  <p className="mt-3 text-[10px] uppercase text-neutral-500">
+                    Possível local de informação
+                  </p>
+                </article>
+              ))}
             </div>
           </div>
         </section>
