@@ -76,8 +76,11 @@ docker compose -f devops/docker-compose.yml up -d --build web
 | `API_PORT` | `8000` | Porta da API no host |
 | `WEB_PORT` | `5173` | Porta da interface no host |
 | `CORS_ORIGINS` | `http://localhost:5173` | Origem autorizada |
+| `CARTO_API_KEY` | vazio | Chave dos Basemaps CARTO; fica só no `.env` local |
 
 O `.env` é ignorado pelo Git. Nunca versione credenciais reais.
+
+A chave `CARTO_API_KEY` é repassada ao front-end como `VITE_CARTO_API_KEY`. Como o Vite injeta variáveis `VITE_*` no bundle do navegador, essa chave é pública em tempo de execução. Restrinja os domínios permitidos no painel da CARTO e nunca use essa chave para operações sensíveis.
 
 ## Banco de dados
 

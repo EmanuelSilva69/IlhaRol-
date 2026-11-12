@@ -60,6 +60,8 @@ services:
       dockerfile: ../devops/docker/frontend.Dockerfile
     container_name: ilharole-web
     restart: unless-stopped
+    environment:
+      VITE_CARTO_API_KEY: ${CARTO_API_KEY}
     ports:
       - "${WEB_PORT}:5173"
     volumes:

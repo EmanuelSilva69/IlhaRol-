@@ -85,6 +85,14 @@ O componente aplica `min-height: 420px` e `height: 50vh` pela classe `.event-map
 
 A atribuição ao OpenStreetMap e ao CARTO é exibida pelo controle do Leaflet. Os SVGs dos marcadores e os controles não recebem o filtro do modo temático.
 
+### Chave da CARTO
+
+A chave fica em `devops/.env` como `CARTO_API_KEY` e é repassada ao Vite como `VITE_CARTO_API_KEY` pelo `devops/docker-compose.yml`. O código acrescenta `?key=...` às URLs dos tiles quando a variável existe.
+
+Como variáveis `VITE_*` são embutidas no bundle do navegador, a chave é visível para quem acessa o site. Restrinja os domínios permitidos no painel da CARTO e não use essa chave para operações sensíveis. O arquivo `devops/.env` é ignorado pelo Git.
+
+Para um build de produção, defina `VITE_CARTO_API_KEY` no ambiente de build; sem ela, os tiles são solicitados sem chave.
+
 ## Marcadores
 
 Os marcadores ficam em `src/assets/markers/` e são injetados como SVG inline no `L.divIcon`:
