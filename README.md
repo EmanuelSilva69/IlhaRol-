@@ -66,6 +66,9 @@ O arquivo `devops/.env` é ignorado pelo Git. Nunca versione credenciais reais.
 | `API_PORT` | `8000` | Porta da API no host |
 | `WEB_PORT` | `5173` | Porta da interface no host |
 | `CORS_ORIGINS` | `http://localhost:5173` | Origens autorizadas a chamar a API |
+| `CARTO_API_KEY` | vazio | Chave dos Basemaps CARTO; fica só no `devops/.env` local |
+
+A chave `CARTO_API_KEY` é repassada ao front-end como `VITE_CARTO_API_KEY`. Variáveis `VITE_*` são incorporadas ao bundle do navegador, então a chave é pública em execução; restrinja os domínios permitidos no painel da CARTO.
 
 ## Subir a stack
 

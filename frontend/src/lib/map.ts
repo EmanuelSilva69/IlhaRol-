@@ -30,6 +30,19 @@ const CATEGORY_ALIASES: Record<string, EventCategory> = {
   gastronomia: "gastronomia",
 };
 
+const CARTO_API_KEY = import.meta.env.VITE_CARTO_API_KEY as
+  | string
+  | undefined;
+
+function withCartoKey(url: string, apiKey?: string): string {
+  if (!apiKey) {
+    return url;
+  }
+
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}key=${encodeURIComponent(apiKey)}`;
+}
+
 export function normalizeCategory(
   value: string | null | undefined,
 ): EventCategory | null {
@@ -50,6 +63,10 @@ export function resolveTheme(theme?: MapTheme): MapTheme {
   return theme ?? "light";
 }
 
-export function tileConfigFor(theme?: MapTheme) {
-  return THEME_TILES[resolveTheme(theme)];
+export function tileConfigFor(
+  theme?: MapTheme,
+  apiKey: string | undefined = CARTO_API_KEY,
+) {
+  const config = THEME_TILES[resolveTheme(theme)];
+  return { ...config, url: withCartoKey(config.url, apiKey) };
 }

@@ -38,6 +38,14 @@ describe("tileConfigFor", () => {
     expect(tileConfigFor("light").attribution).toContain("OpenStreetMap");
     expect(tileConfigFor("light").attribution).toContain("CARTO");
   });
+
+  it("adiciona a chave da CARTO quando informada", () => {
+    expect(tileConfigFor("light", "test-key").url).toContain("key=test-key");
+  });
+
+  it("não adiciona chave quando ela está vazia", () => {
+    expect(tileConfigFor("light", "").url).not.toContain("key=");
+  });
 });
 
 describe("padrões do mapa", () => {
