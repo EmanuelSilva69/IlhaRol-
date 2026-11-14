@@ -1,80 +1,94 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 52" width="44" height="52" aria-hidden="true" focusable="false">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" aria-hidden="true" focusable="false">
   <defs>
-    <linearGradient id="ir-theater-pin" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#ef4444" />
-      <stop offset="1" stop-color="#b91c1c" />
+    <linearGradient id="ir-teatro-pin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b5cf6" />
+      <stop offset="1" stop-color="#5b21b6" />
     </linearGradient>
-    <filter id="ir-theater-shadow" x="-30%" y="-20%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#7f1d1d" flood-opacity="0.35" />
+    <filter id="ir-teatro-shadow" x="-30%" y="-20%" width="170%" height="180%">
+      <feDropShadow dx="0" dy="2" stdDeviation="1.8" flood-color="#4c1d95" flood-opacity="0.35" />
     </filter>
   </defs>
 
   <style>
-    .ir-theater-left {
-      animation: ir-theater-swing 2.8s ease-in-out infinite;
+    .ir-teatro-float {
+      animation: ir-teatro-float 4s ease-in-out infinite;
       transform-box: fill-box;
       transform-origin: center;
     }
 
-    .ir-theater-right {
-      animation: ir-theater-swing 2.8s ease-in-out infinite reverse;
+    .ir-teatro-left {
+      animation: ir-teatro-sway 3.2s ease-in-out infinite;
       transform-box: fill-box;
       transform-origin: center;
     }
 
-    @keyframes ir-theater-swing {
-      0%, 100% { transform: rotate(-6deg); }
-      50% { transform: rotate(6deg); }
+    .ir-teatro-right {
+      animation: ir-teatro-sway 3.2s ease-in-out infinite reverse;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    @keyframes ir-teatro-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-1.2px); }
+    }
+
+    @keyframes ir-teatro-sway {
+      0%, 100% { transform: rotate(-3.5deg); }
+      50% { transform: rotate(3.5deg); }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .ir-theater-left,
-      .ir-theater-right {
+      .ir-teatro-float,
+      .ir-teatro-left,
+      .ir-teatro-right {
         animation: none;
       }
     }
   </style>
 
-  <g filter="url(#ir-theater-shadow)">
+  <g filter="url(#ir-teatro-shadow)">
     <path
-      d="M22 1.5C10.7 1.5 1.5 10.7 1.5 22c0 14.2 20.5 28.5 20.5 28.5S42.5 36.2 42.5 22C42.5 10.7 33.3 1.5 22 1.5Z"
-      fill="url(#ir-theater-pin)"
+      d="M20 2C10.8 2 3 9.8 3 19c0 11.5 17 19 17 19s17-7.5 17-19C37 9.8 29.2 2 20 2Z"
+      fill="url(#ir-teatro-pin)"
       stroke="#ffffff"
       stroke-width="2"
     />
   </g>
 
-  <circle cx="22" cy="22" r="13" fill="#fef2f2" />
+  <circle cx="20" cy="18.5" r="14" fill="#f5f3ff" />
 
-  <g class="ir-theater-left">
-    <path
-      d="M13 16.5h7.5v7c0 3.2-1.7 5.8-3.75 5.8S13 26.7 13 23.5v-7Z"
-      fill="#dc2626"
-    />
-    <circle cx="15.2" cy="20" r="0.9" fill="#ffffff" />
-    <circle cx="18.3" cy="20" r="0.9" fill="#ffffff" />
-    <path
-      d="M14.5 23.5c1.5 1.6 3.5 1.6 5 0"
-      fill="none"
-      stroke="#ffffff"
-      stroke-width="1.1"
-      stroke-linecap="round"
-    />
-  </g>
+  <g class="ir-teatro-float">
+    <g class="ir-teatro-left">
+      <path
+        d="M10.5 13.5h7.2v6.6c0 3.1-1.6 5.4-3.6 5.4s-3.6-2.3-3.6-5.4v-6.6Z"
+        fill="#8b5cf6"
+      />
+      <circle cx="12.7" cy="17" r="0.85" fill="#ffffff" />
+      <circle cx="15.6" cy="17" r="0.85" fill="#ffffff" />
+      <path
+        d="M12 20c1.4 1.5 3.2 1.5 4.6 0"
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="1"
+        stroke-linecap="round"
+      />
+    </g>
 
-  <g class="ir-theater-right">
-    <path
-      d="M23.5 16.5H31v7c0 3.2-1.7 5.8-3.75 5.8S23.5 26.7 23.5 23.5v-7Z"
-      fill="#b91c1c"
-    />
-    <circle cx="25.7" cy="20" r="0.9" fill="#ffffff" />
-    <circle cx="28.8" cy="20" r="0.9" fill="#ffffff" />
-    <path
-      d="M25 26c1.5-1.6 3.5-1.6 5 0"
-      fill="none"
-      stroke="#ffffff"
-      stroke-width="1.1"
-      stroke-linecap="round"
-    />
+    <g class="ir-teatro-right">
+      <path
+        d="M22.3 13.5h7.2v6.6c0 3.1-1.6 5.4-3.6 5.4s-3.6-2.3-3.6-5.4v-6.6Z"
+        fill="#6d28d9"
+      />
+      <circle cx="24.5" cy="17" r="0.85" fill="#ffffff" />
+      <circle cx="27.4" cy="17" r="0.85" fill="#ffffff" />
+      <path
+        d="M23.8 22c1.4-1.5 3.2-1.5 4.6 0"
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="1"
+        stroke-linecap="round"
+      />
+    </g>
   </g>
 </svg>

@@ -11,32 +11,46 @@ const THEMES: Array<{ value: MapTheme; label: string }> = [
 
 const SAMPLE_EVENTS: MapEvent[] = [
   {
-    id: "musica-1",
-    title: "Show na Praça",
-    category: "musica",
+    id: "bumba-1",
+    title: "Bumba Meu Boi na Praça",
+    category: "bumba",
     latitude: -2.5297,
     longitude: -44.3028,
+  },
+  {
+    id: "musica-1",
+    title: "Reggae no Centro",
+    category: "musica",
+    latitude: -2.535,
+    longitude: -44.296,
   },
   {
     id: "teatro-1",
     title: "Peça no Teatro",
     category: "teatro",
-    latitude: -2.535,
-    longitude: -44.296,
+    latitude: -2.522,
+    longitude: -44.31,
   },
   {
     id: "gastronomia-1",
     title: "Feira Gastronômica",
     category: "gastronomia",
-    latitude: -2.522,
-    longitude: -44.31,
+    latitude: -2.54,
+    longitude: -44.315,
+  },
+  {
+    id: "museu-1",
+    title: "Museu Histórico",
+    category: "museu",
+    latitude: -2.527,
+    longitude: -44.29,
   },
   {
     id: "outro-1",
     title: "Evento especial",
     category: "cinema",
-    latitude: -2.54,
-    longitude: -44.315,
+    latitude: -2.545,
+    longitude: -44.3,
   },
 ];
 

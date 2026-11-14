@@ -1,4 +1,9 @@
-export type EventCategory = "musica" | "teatro" | "gastronomia";
+export type EventCategory =
+  | "bumba"
+  | "musica"
+  | "teatro"
+  | "gastronomia"
+  | "museu";
 
 export type MapTheme = "light" | "dark" | "thematic";
 

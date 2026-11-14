@@ -8,7 +8,7 @@ export const SAO_LUIS_NEIGHBORHOODS = [
   "Cohama",
   "Calhau",
   "Renascença",
-  " Madre Deus",
+  "Madre Deus",
 ] as const;
 
 export const INITIAL_EVENTS: CulturalEvent[] = [
@@ -145,6 +145,46 @@ export const INITIAL_EVENTS: CulturalEvent[] = [
       "https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=900&q=80",
     organizer: "Carlos Produtor Cultural",
     organizerId: "org-carlos",
+    status: "ATIVO",
+    isFavorite: false,
+    reviews: [],
+  },
+  {
+    id: "bumba-1",
+    title: "Noite de Bumba Meu Boi no Largo da Madre Deus",
+    description:
+      "Encontro de grupos de sotaques de matraca, zabumba e orquestra com o tradicional cortejo de Bumba Meu Boi, seguido de dança de roda aberta ao público.",
+    category: "bumba",
+    date: "2026-11-29",
+    time: "18:00 às 23:00",
+    location: "Largo da Madre Deus — Rua da Madre Deus",
+    neighborhood: "Madre Deus",
+    latitude: -2.5249,
+    longitude: -44.2994,
+    bannerUrl:
+      "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=900&q=80",
+    organizer: "Associação Cultural Bumba Meu Boi da Madre Deus",
+    organizerId: "org-bumba",
+    status: "ATIVO",
+    isFavorite: false,
+    reviews: [],
+  },
+  {
+    id: "museu-1",
+    title: "Exposição 'Azulejos e Casarões do Centro Histórico'",
+    description:
+      "Visita guiada por acervos de azulejos históricos, fotografias e maquetes dos casarões coloniais de São Luís, com mediação para escolas e famílias.",
+    category: "museu",
+    date: "2026-11-25",
+    time: "10:00 às 17:00",
+    location: "Museu Histórico e Artístico do Maranhão — Rua do Sol",
+    neighborhood: "Centro Histórico",
+    latitude: -2.531,
+    longitude: -44.302,
+    bannerUrl:
+      "https://images.unsplash.com/photo-1564399579883-451a5d44ec08?auto=format&fit=crop&w=900&q=80",
+    organizer: "Museu Histórico e Artístico do Maranhão",
+    organizerId: "org-museu",
     status: "ATIVO",
     isFavorite: false,
     reviews: [],

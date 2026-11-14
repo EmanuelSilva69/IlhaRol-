@@ -97,24 +97,26 @@ Para um build de produção, defina `VITE_CARTO_API_KEY` no ambiente de build; s
 
 Os marcadores ficam em `src/assets/markers/` e são injetados como SVG inline no `L.divIcon`:
 
-| Categoria | Arquivo | Animação |
-| --- | --- | --- |
-| Música | `music.svg` | Nota musical pulsando |
-| Teatro | `theater.svg` | Máscaras balançando em sentidos opostos |
-| Gastronomia | `gastronomy.svg` | Prato girando e vapor subindo |
-| Desconhecida | marcador neutro em `src/lib/markers.ts` | Sem animação |
+| Tier | Categoria | Arquivo | Tamanho | Animação |
+| --- | --- | --- | --- | --- |
+| 1 | Bumba Meu Boi | `bumba.svg` | 80×80 | Aura expansiva e fitas balançando |
+| 2 | Música, reggae e shows | `reggae.svg` | 56×56 | Caixa de som com bounce e ondas sonoras |
+| 3 | Teatro | `theater.svg` | 40×40 | Máscaras flutuando e balançando |
+| 3 | Gastronomia | `gastronomy.svg` | 40×40 | Vapor subindo e brilho suave |
+| 4 | Museus e exposições | `museum.svg` | 32×32 | Fade lento de opacidade |
+| — | Desconhecida | marcador neutro em `src/lib/markers.ts` | 44×52 | Sem animação |
 
-Cada SVG tem um bloco `<style>` com classes prefixadas (`ir-music-*`, `ir-theater-*`, `ir-gastronomy-*`) e um bloco `@media (prefers-reduced-motion: reduce)` que desliga a animação. O componente `EventMap` cria os marcadores com `createEventIcon`, que usa `L.divIcon` com `iconSize: [44, 52]`, `iconAnchor: [22, 50]` e `className: "event-marker"`.
+Cada SVG tem um bloco `<style>` com classes prefixadas (`ir-bumba-*`, `ir-reggae-*`, `ir-teatro-*`, `ir-gastro-*`, `ir-museu-*`) e um bloco `@media (prefers-reduced-motion: reduce)` que desliga a animação. O componente `EventMap` cria os marcadores com `createEventIcon`, que usa `L.divIcon` com `className: "event-marker"` e tamanho/âncora definidos por categoria em `markerMetricsFor`.
 
-O título e a categoria são escapados antes de entrar no HTML e expostos em `aria-label` e `title`, por exemplo: `Show na Praça — Música`. Categorias ausentes ou desconhecidas recebem o marcador neutro.
+O título e a categoria são escapados antes de entrar no HTML e expostos em `aria-label` e `title`, por exemplo: `Bumba Meu Boi na Praça — Bumba Meu Boi`. Categorias ausentes ou desconhecidas recebem o marcador neutro.
 
 ### Adicionar uma nova categoria
 
 1. Crie o SVG em `src/assets/markers/` com classes prefixadas e o bloco de movimento reduzido.
 2. Adicione a categoria em `src/types/event.ts` (`EventCategory`).
-3. Importe o SVG com `?raw` em `src/lib/markers.ts` e registre-o em `CATEGORY_SVGS` e `CATEGORY_LABELS`.
-4. Inclua um evento de exemplo em `src/App.tsx` e atualize os testes de `src/lib/markers.test.ts`.
-5. Rode `npm test` e verifique o marcador no mapa.
+3. Importe o SVG com `?raw` em `src/lib/markers.ts` e registre-o em `CATEGORY_SVGS`, `CATEGORY_LABELS` e `MARKER_METRICS`.
+4. Inclua aliases em `CATEGORY_ALIASES` de `src/lib/map.ts` e um evento de exemplo em `src/App.tsx`.
+5. Atualize os testes de `src/lib/markers.test.ts` e rode `npm test`.
 
 ## Estrutura
 

@@ -1,7 +1,9 @@
 import L from "leaflet";
 
+import bumbaSvg from "../assets/markers/bumba.svg?raw";
 import gastronomySvg from "../assets/markers/gastronomy.svg?raw";
-import musicSvg from "../assets/markers/music.svg?raw";
+import museumSvg from "../assets/markers/museum.svg?raw";
+import reggaeSvg from "../assets/markers/reggae.svg?raw";
 import theaterSvg from "../assets/markers/theater.svg?raw";
 import { normalizeCategory } from "./map";
 import type { EventCategory, MapEvent } from "../types/event";
@@ -13,16 +15,36 @@ const NEUTRAL_MARKER = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 
 </svg>`;
 
 const CATEGORY_LABELS: Record<EventCategory, string> = {
-  musica: "Música",
+  bumba: "Bumba Meu Boi",
+  musica: "Música, reggae e shows",
   teatro: "Teatro",
   gastronomia: "Gastronomia",
+  museu: "Museus e exposições",
 };
 
 const CATEGORY_SVGS: Record<EventCategory, string> = {
-  musica: musicSvg,
+  bumba: bumbaSvg,
+  musica: reggaeSvg,
   teatro: theaterSvg,
   gastronomia: gastronomySvg,
+  museu: museumSvg,
 };
+
+interface MarkerMetrics {
+  width: number;
+  height: number;
+  anchor: [number, number];
+}
+
+const MARKER_METRICS: Record<EventCategory, MarkerMetrics> = {
+  bumba: { width: 80, height: 80, anchor: [40, 77] },
+  musica: { width: 56, height: 56, anchor: [28, 53] },
+  teatro: { width: 40, height: 40, anchor: [20, 38] },
+  gastronomia: { width: 40, height: 40, anchor: [20, 38] },
+  museu: { width: 32, height: 32, anchor: [16, 30] },
+};
+
+const NEUTRAL_METRICS: MarkerMetrics = { width: 44, height: 52, anchor: [22, 50] };
 
 const HTML_ENTITIES: Record<string, string> = {
   "&": "&amp;",
@@ -46,6 +68,13 @@ export function markerSvgFor(category: string | null | undefined): string {
   return normalized ? CATEGORY_SVGS[normalized] : NEUTRAL_MARKER;
 }
 
+export function markerMetricsFor(
+  category: string | null | undefined,
+): MarkerMetrics {
+  const normalized = normalizeCategory(category);
+  return normalized ? MARKER_METRICS[normalized] : NEUTRAL_METRICS;
+}
+
 export function eventLabel(event: MapEvent): string {
   return `${event.title} — ${categoryLabel(event.category)}`;
 }
@@ -53,11 +82,12 @@ export function eventLabel(event: MapEvent): string {
 export function createEventIcon(event: MapEvent): L.DivIcon {
   const label = eventLabel(event);
   const safeLabel = escapeHtml(label);
+  const metrics = markerMetricsFor(event.category);
 
   return L.divIcon({
     html: `<div class="event-marker-inner" role="img" aria-label="${safeLabel}" title="${safeLabel}">${markerSvgFor(event.category)}</div>`,
     className: "event-marker",
-    iconSize: [44, 52],
-    iconAnchor: [22, 50],
+    iconSize: [metrics.width, metrics.height],
+    iconAnchor: metrics.anchor,
   });
 }

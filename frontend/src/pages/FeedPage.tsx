@@ -2,6 +2,7 @@ import { useState } from "react";
 import EventMap from "../components/EventMap";
 import RfBadge from "../components/RfBadge";
 import { SAO_LUIS_NEIGHBORHOODS } from "../data/mockEvents";
+import { normalizeCategory } from "../lib/map";
 import { categoryLabel } from "../lib/markers";
 import type { CulturalEvent, MapTheme } from "../types/event";
 
@@ -37,7 +38,8 @@ export function FeedPage({ events, onToggleFavorite }: FeedPageProps) {
           event.neighborhood === selectedNeighborhood;
 
         const matchesCategory =
-          selectedCategory === "TODAS" || event.category === selectedCategory;
+          selectedCategory === "TODAS" ||
+          normalizeCategory(event.category) === selectedCategory;
 
         const matchesPeriod =
           selectedPeriod === "TODOS" ||
@@ -72,7 +74,7 @@ export function FeedPage({ events, onToggleFavorite }: FeedPageProps) {
         rfs={["RF03", "RF04", "RF05"]}
         rnfs={["RNF01", "RNF02", "RNF06"]}
         userStories={["US02", "US03", "US04"]}
-        description="Apresenta o feed unificado de eventos de São Luís com busca textual por palavra-chave e filtros combinados por bairro, categoria (Música, Teatro, Gastronomia) e período, sincronizados com o mapa interativo Leaflet e botão rápido de 'Tenho interesse' (Fluxo 1 e Fluxo 3)."
+        description="Apresenta o feed unificado de eventos de São Luís com busca textual por palavra-chave e filtros combinados por bairro, categoria (Bumba Meu Boi, Música/Reggae, Teatro, Gastronomia e Museus) e período, sincronizados com o mapa interativo Leaflet e botão rápido de 'Tenho interesse' (Fluxo 1 e Fluxo 3)."
       />
 
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
@@ -147,9 +149,11 @@ export function FeedPage({ events, onToggleFavorite }: FeedPageProps) {
                 className="mt-1 w-full border-2 border-black bg-white px-2.5 py-1.5 text-xs font-medium"
               >
                 <option value="TODAS">Todas as categorias</option>
-                <option value="musica">Música</option>
+                <option value="bumba">Bumba Meu Boi</option>
+                <option value="musica">Música, reggae e shows</option>
                 <option value="teatro">Teatro</option>
                 <option value="gastronomia">Gastronomia</option>
+                <option value="museu">Museus e exposições</option>
               </select>
             </div>
 

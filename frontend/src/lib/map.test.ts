@@ -9,10 +9,13 @@ import {
 } from "./map";
 
 describe("normalizeCategory", () => {
-  it("normaliza acentos e maiúsculas", () => {
+  it("normaliza acentos, maiúsculas e aliases", () => {
+    expect(normalizeCategory("Bumba Meu Boi")).toBe("bumba");
     expect(normalizeCategory("Música")).toBe("musica");
+    expect(normalizeCategory("Casas de Reggae")).toBe("musica");
     expect(normalizeCategory("TEATRO")).toBe("teatro");
     expect(normalizeCategory("gastronomia")).toBe("gastronomia");
+    expect(normalizeCategory("Museus")).toBe("museu");
   });
 
   it("retorna null para categoria desconhecida ou ausente", () => {
