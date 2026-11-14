@@ -101,12 +101,17 @@ Os marcadores ficam em `src/assets/markers/` e são injetados como SVG inline no
 | --- | --- | --- | --- | --- |
 | 1 | Bumba Meu Boi | `bumba.svg` | 80×80 | Aura expansiva e fitas balançando |
 | 2 | Música, reggae e shows | `reggae.svg` | 56×56 | Caixa de som com bounce e ondas sonoras |
+| 2 | Tambor de Crioula | `tambor.svg` | 56×56 | Saia rodada girando (punga) e fitas tremulando |
+| 2 | Samba e pagode | `samba.svg` | 56×56 | Pandeiro balançando, platinelas vibrando e notas subindo |
 | 3 | Teatro | `theater.svg` | 40×40 | Máscaras flutuando e balançando |
 | 3 | Gastronomia | `gastronomy.svg` | 40×40 | Vapor subindo e brilho suave |
+| 3 | Orla e praia | `orla.svg` | 40×40 | Ondas deslizando e folhas do coqueiro ao vento |
+| 3 | Feirinhas e artesanato | `feirinha.svg` | 40×40 | Brilhos pulsando ao redor da barraca |
 | 4 | Museus e exposições | `museum.svg` | 32×32 | Fade lento de opacidade |
+| 4 | Cinema e audiovisual | `cinema.svg` | 32×32 | Rolo de filme girando continuamente |
 | — | Desconhecida | marcador neutro em `src/lib/markers.ts` | 44×52 | Sem animação |
 
-Cada SVG tem um bloco `<style>` com classes prefixadas (`ir-bumba-*`, `ir-reggae-*`, `ir-teatro-*`, `ir-gastro-*`, `ir-museu-*`) e um bloco `@media (prefers-reduced-motion: reduce)` que desliga a animação. O componente `EventMap` cria os marcadores com `createEventIcon`, que usa `L.divIcon` com `className: "event-marker"` e tamanho/âncora definidos por categoria em `markerMetricsFor`.
+Cada SVG tem um bloco `<style>` com classes prefixadas (`ir-bumba-*`, `ir-reggae-*`, `ir-teatro-*`, `ir-gastro-*`, `ir-museu-*`, `ir-tambor-*`, `ir-samba-*`, `ir-orla-*`, `ir-feira-*`, `ir-cinema-*`) e um bloco `@media (prefers-reduced-motion: reduce)` que desliga a animação. O componente `EventMap` cria os marcadores com `createEventIcon`, que usa `L.divIcon` com `className: "event-marker"` e tamanho/âncora definidos por categoria em `markerMetricsFor`.
 
 O título e a categoria são escapados antes de entrar no HTML e expostos em `aria-label` e `title`, por exemplo: `Bumba Meu Boi na Praça — Bumba Meu Boi`. Categorias ausentes ou desconhecidas recebem o marcador neutro.
 

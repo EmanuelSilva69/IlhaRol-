@@ -74,7 +74,7 @@ export function FeedPage({ events, onToggleFavorite }: FeedPageProps) {
         rfs={["RF03", "RF04", "RF05"]}
         rnfs={["RNF01", "RNF02", "RNF06"]}
         userStories={["US02", "US03", "US04"]}
-        description="Apresenta o feed unificado de eventos de São Luís com busca textual por palavra-chave e filtros combinados por bairro, categoria (Bumba Meu Boi, Música/Reggae, Teatro, Gastronomia e Museus) e período, sincronizados com o mapa interativo Leaflet e botão rápido de 'Tenho interesse' (Fluxo 1 e Fluxo 3)."
+        description="Apresenta o feed unificado de eventos de São Luís com busca textual por palavra-chave e filtros combinados por bairro, categoria (Bumba Meu Boi, Música/Reggae, Teatro, Gastronomia, Museus, Tambor de Crioula, Samba/Pagode, Orla/Praia, Feirinhas/Artesanato e Cinema/Audiovisual) e período, sincronizados com o mapa interativo Leaflet e botão rápido de 'Tenho interesse' (Fluxo 1 e Fluxo 3)."
       />
 
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
@@ -154,6 +154,11 @@ export function FeedPage({ events, onToggleFavorite }: FeedPageProps) {
                 <option value="teatro">Teatro</option>
                 <option value="gastronomia">Gastronomia</option>
                 <option value="museu">Museus e exposições</option>
+                <option value="tambor">Tambor de Crioula</option>
+                <option value="samba">Samba e pagode</option>
+                <option value="orla">Orla e praia</option>
+                <option value="feirinha">Feirinhas e artesanato</option>
+                <option value="cinema">Cinema e audiovisual</option>
               </select>
             </div>
 

@@ -185,9 +185,9 @@ Verificação executada em 12/11/2026:
 - `GET http://localhost:8000/health`: `200` com `{"status":"ok","database":"connected"}`.
 - `GET http://localhost:8000/`: resposta identifica a API como protótipo.
 - `http://localhost:5173`: wireframe com “Header aqui”, “Feed de eventos”, “Mapa de eventos” e “Footer aqui”.
-- Mapa: temas claro, escuro e temático funcionando; 4 marcadores de exemplo, incluindo o neutro.
+- Mapa: temas claro, escuro e temático funcionando; marcadores de exemplo para as 10 categorias (Bumba, Música/Reggae, Teatro, Gastronomia, Museus, Tambor de Crioula, Samba/Pagode, Orla/Praia, Feirinhas/Artesanato e Cinema/Audiovisual).
 - `prefers-reduced-motion: reduce`: animações dos marcadores desligadas.
-- Testes: 2 no back-end e 12 no front-end; build de produção gerado.
+- Testes: 2 no back-end e 16 no front-end; build de produção gerado.
 - Scripts `db-shell` e `db-backup` testados; script de inicialização executado em volume novo.
 
 ## Publicação

@@ -3,7 +3,12 @@ export type EventCategory =
   | "musica"
   | "teatro"
   | "gastronomia"
-  | "museu";
+  | "museu"
+  | "tambor"
+  | "samba"
+  | "orla"
+  | "feirinha"
+  | "cinema";
 
 export type MapTheme = "light" | "dark" | "thematic";
 

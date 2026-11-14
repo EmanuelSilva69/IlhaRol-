@@ -15,10 +15,15 @@ describe("markerSvgFor", () => {
     expect(markerSvgFor("TEATRO")).toContain("ir-teatro-left");
     expect(markerSvgFor("gastronomia")).toContain("ir-gastro-steam");
     expect(markerSvgFor("Museus")).toContain("ir-museu-fade");
+    expect(markerSvgFor("Tambor de Crioula")).toContain("ir-tambor-skirt");
+    expect(markerSvgFor("pagode")).toContain("ir-samba-pandeiro");
+    expect(markerSvgFor("Praia")).toContain("ir-orla-leaf");
+    expect(markerSvgFor("Artesanato")).toContain("ir-feira-sparkle");
+    expect(markerSvgFor("Cinema")).toContain("ir-cinema-reel");
   });
 
   it("usa marcador neutro para categoria desconhecida", () => {
-    expect(markerSvgFor("cinema")).toContain("#64748b");
+    expect(markerSvgFor("literatura")).toContain("#64748b");
     expect(markerSvgFor(undefined)).toContain("#64748b");
   });
 });
@@ -32,13 +37,18 @@ describe("markerMetricsFor", () => {
     });
     expect(markerMetricsFor("musica").width).toBe(56);
     expect(markerMetricsFor("reggae").width).toBe(56);
+    expect(markerMetricsFor("tambor").width).toBe(56);
+    expect(markerMetricsFor("samba").width).toBe(56);
     expect(markerMetricsFor("teatro").width).toBe(40);
     expect(markerMetricsFor("gastronomia").width).toBe(40);
+    expect(markerMetricsFor("orla").width).toBe(40);
+    expect(markerMetricsFor("feirinha").width).toBe(40);
     expect(markerMetricsFor("museu").width).toBe(32);
+    expect(markerMetricsFor("cinema").width).toBe(32);
   });
 
   it("usa o tamanho neutro para categoria desconhecida", () => {
-    expect(markerMetricsFor("cinema")).toEqual({
+    expect(markerMetricsFor("literatura")).toEqual({
       width: 44,
       height: 52,
       anchor: [22, 50],
@@ -53,7 +63,12 @@ describe("categoryLabel", () => {
     expect(categoryLabel("teatro")).toBe("Teatro");
     expect(categoryLabel("GASTRONOMIA")).toBe("Gastronomia");
     expect(categoryLabel("museus")).toBe("Museus e exposições");
-    expect(categoryLabel("cinema")).toBe("Outra categoria");
+    expect(categoryLabel("tambor")).toBe("Tambor de Crioula");
+    expect(categoryLabel("pagode")).toBe("Samba e pagode");
+    expect(categoryLabel("orla")).toBe("Orla e praia");
+    expect(categoryLabel("feira")).toBe("Feirinhas e artesanato");
+    expect(categoryLabel("cinema")).toBe("Cinema e audiovisual");
+    expect(categoryLabel("literatura")).toBe("Outra categoria");
   });
 });
 

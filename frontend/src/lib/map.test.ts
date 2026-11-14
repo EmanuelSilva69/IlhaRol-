@@ -16,10 +16,15 @@ describe("normalizeCategory", () => {
     expect(normalizeCategory("TEATRO")).toBe("teatro");
     expect(normalizeCategory("gastronomia")).toBe("gastronomia");
     expect(normalizeCategory("Museus")).toBe("museu");
+    expect(normalizeCategory("Tambor de Crioula")).toBe("tambor");
+    expect(normalizeCategory("Pagode")).toBe("samba");
+    expect(normalizeCategory("Praia")).toBe("orla");
+    expect(normalizeCategory("Artesanato")).toBe("feirinha");
+    expect(normalizeCategory("Audiovisual")).toBe("cinema");
   });
 
   it("retorna null para categoria desconhecida ou ausente", () => {
-    expect(normalizeCategory("cinema")).toBeNull();
+    expect(normalizeCategory("literatura")).toBeNull();
     expect(normalizeCategory("")).toBeNull();
     expect(normalizeCategory(undefined)).toBeNull();
   });

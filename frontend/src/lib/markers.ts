@@ -1,9 +1,14 @@
 import L from "leaflet";
 
 import bumbaSvg from "../assets/markers/bumba.svg?raw";
+import cinemaSvg from "../assets/markers/cinema.svg?raw";
+import feirinhaSvg from "../assets/markers/feirinha.svg?raw";
 import gastronomySvg from "../assets/markers/gastronomy.svg?raw";
 import museumSvg from "../assets/markers/museum.svg?raw";
+import orlaSvg from "../assets/markers/orla.svg?raw";
 import reggaeSvg from "../assets/markers/reggae.svg?raw";
+import sambaSvg from "../assets/markers/samba.svg?raw";
+import tamborSvg from "../assets/markers/tambor.svg?raw";
 import theaterSvg from "../assets/markers/theater.svg?raw";
 import { normalizeCategory } from "./map";
 import type { EventCategory, MapEvent } from "../types/event";
@@ -20,6 +25,11 @@ const CATEGORY_LABELS: Record<EventCategory, string> = {
   teatro: "Teatro",
   gastronomia: "Gastronomia",
   museu: "Museus e exposições",
+  tambor: "Tambor de Crioula",
+  samba: "Samba e pagode",
+  orla: "Orla e praia",
+  feirinha: "Feirinhas e artesanato",
+  cinema: "Cinema e audiovisual",
 };
 
 const CATEGORY_SVGS: Record<EventCategory, string> = {
@@ -28,6 +38,11 @@ const CATEGORY_SVGS: Record<EventCategory, string> = {
   teatro: theaterSvg,
   gastronomia: gastronomySvg,
   museu: museumSvg,
+  tambor: tamborSvg,
+  samba: sambaSvg,
+  orla: orlaSvg,
+  feirinha: feirinhaSvg,
+  cinema: cinemaSvg,
 };
 
 interface MarkerMetrics {
@@ -42,6 +57,11 @@ const MARKER_METRICS: Record<EventCategory, MarkerMetrics> = {
   teatro: { width: 40, height: 40, anchor: [20, 38] },
   gastronomia: { width: 40, height: 40, anchor: [20, 38] },
   museu: { width: 32, height: 32, anchor: [16, 30] },
+  tambor: { width: 56, height: 56, anchor: [28, 53] },
+  samba: { width: 56, height: 56, anchor: [28, 53] },
+  orla: { width: 40, height: 40, anchor: [20, 38] },
+  feirinha: { width: 40, height: 40, anchor: [20, 38] },
+  cinema: { width: 32, height: 32, anchor: [16, 30] },
 };
 
 const NEUTRAL_METRICS: MarkerMetrics = { width: 44, height: 52, anchor: [22, 50] };
