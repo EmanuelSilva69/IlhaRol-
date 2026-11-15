@@ -35,6 +35,17 @@ export interface MapEvent {
   longitude: number;
 }
 
+export interface NewEventInput {
+  title: string;
+  description: string;
+  category: EventCategory;
+  date: string;
+  time: string;
+  location: string;
+  neighborhood: string;
+  bannerUrl: string;
+}
+
 export interface CulturalEvent extends MapEvent {
   description: string;
   date: string;
