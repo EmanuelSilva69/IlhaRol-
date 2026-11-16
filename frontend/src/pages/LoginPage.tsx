@@ -24,6 +24,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginFeedback, setLoginFeedback] = useState<string | null>(null);
+  const [loginError, setLoginError] = useState(false);
+  const [loginShake, setLoginShake] = useState(0);
 
   const [registerName, setRegisterName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
@@ -36,6 +38,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     "Música e reggae",
   ]);
   const [registerFeedback, setRegisterFeedback] = useState<string | null>(null);
+  const [registerError, setRegisterError] = useState(false);
+  const [registerShake, setRegisterShake] = useState(0);
 
   const [recoveryEmail, setRecoveryEmail] = useState("");
   const [recoveryFeedback, setRecoveryFeedback] = useState<string | null>(null);
@@ -51,11 +55,14 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   const handleLogin = (event: FormEvent) => {
     event.preventDefault();
     if (!loginEmail.trim() || !loginPassword.trim()) {
+      setLoginError(true);
+      setLoginShake((current) => current + 1);
       setLoginFeedback(
         "Informe e-mail e senha para autenticar. Credenciais inválidas são rejeitadas (RF01a).",
       );
       return;
     }
+    setLoginError(false);
     onLogin("Emanuel Lopes");
     setLoginFeedback(
       "Sessão iniciada com sucesso. Token JWT simulado ativo no cabeçalho (RF01a).",
@@ -65,11 +72,14 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   const handleRegister = (event: FormEvent) => {
     event.preventDefault();
     if (!registerName.trim() || !registerEmail.trim() || !registerPassword.trim()) {
+      setRegisterError(true);
+      setRegisterShake((current) => current + 1);
       setRegisterFeedback(
         "Preencha nome, e-mail e senha. E-mails já cadastrados são bloqueados (RF01a).",
       );
       return;
     }
+    setRegisterError(false);
     onLogin(registerName.trim());
     setRegisterFeedback(
       `Conta criada para ${registerName.trim()}. Bairro e interesses serão usados nos alertas (RF01b / RF08).`,
@@ -106,7 +116,11 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             autenticação.
           </p>
 
-          <form onSubmit={handleLogin} className="mt-4 space-y-3">
+          <form
+            onSubmit={handleLogin}
+            onAnimationEnd={() => setLoginShake(0)}
+            className={`mt-4 space-y-3 ${loginShake ? "anim-shake" : ""}`}
+          >
             <div>
               <label
                 htmlFor="login-email"
@@ -120,7 +134,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 value={loginEmail}
                 onChange={(event) => setLoginEmail(event.target.value)}
                 placeholder="voce@exemplo.com"
-                className="mt-1 w-full border-2 border-black px-3 py-1.5 text-xs focus:outline-2 focus:outline-offset-2 focus:outline-black"
+                aria-invalid={loginError}
+                className={`mt-1 w-full border-2 px-3 py-1.5 text-xs focus:outline-2 focus:outline-offset-2 focus:outline-black ${
+                  loginError ? "border-red-700 bg-red-50" : "border-black"
+                }`}
               />
             </div>
 
@@ -137,7 +154,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 value={loginPassword}
                 onChange={(event) => setLoginPassword(event.target.value)}
                 placeholder="••••••••"
-                className="mt-1 w-full border-2 border-black px-3 py-1.5 text-xs focus:outline-2 focus:outline-offset-2 focus:outline-black"
+                aria-invalid={loginError}
+                className={`mt-1 w-full border-2 px-3 py-1.5 text-xs focus:outline-2 focus:outline-offset-2 focus:outline-black ${
+                  loginError ? "border-red-700 bg-red-50" : "border-black"
+                }`}
               />
             </div>
 
@@ -176,7 +196,11 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             eventos compatíveis (RF08).
           </p>
 
-          <form onSubmit={handleRegister} className="mt-4 space-y-3">
+          <form
+            onSubmit={handleRegister}
+            onAnimationEnd={() => setRegisterShake(0)}
+            className={`mt-4 space-y-3 ${registerShake ? "anim-shake" : ""}`}
+          >
             <div>
               <label
                 htmlFor="register-name"
@@ -190,7 +214,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 value={registerName}
                 onChange={(event) => setRegisterName(event.target.value)}
                 placeholder="Seu nome completo"
-                className="mt-1 w-full border-2 border-black px-3 py-1.5 text-xs focus:outline-2 focus:outline-offset-2 focus:outline-black"
+                aria-invalid={registerError}
+                className={`mt-1 w-full border-2 px-3 py-1.5 text-xs focus:outline-2 focus:outline-offset-2 focus:outline-black ${
+                  registerError ? "border-red-700 bg-red-50" : "border-black"
+                }`}
               />
             </div>
 
@@ -208,7 +235,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   value={registerEmail}
                   onChange={(event) => setRegisterEmail(event.target.value)}
                   placeholder="voce@exemplo.com"
-                  className="mt-1 w-full border-2 border-black px-3 py-1.5 text-xs focus:outline-2 focus:outline-offset-2 focus:outline-black"
+                  aria-invalid={registerError}
+                  className={`mt-1 w-full border-2 px-3 py-1.5 text-xs focus:outline-2 focus:outline-offset-2 focus:outline-black ${
+                    registerError ? "border-red-700 bg-red-50" : "border-black"
+                  }`}
                 />
               </div>
 
@@ -225,7 +255,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   value={registerPassword}
                   onChange={(event) => setRegisterPassword(event.target.value)}
                   placeholder="Mínimo de 8 caracteres"
-                  className="mt-1 w-full border-2 border-black px-3 py-1.5 text-xs focus:outline-2 focus:outline-offset-2 focus:outline-black"
+                  aria-invalid={registerError}
+                  className={`mt-1 w-full border-2 px-3 py-1.5 text-xs focus:outline-2 focus:outline-offset-2 focus:outline-black ${
+                    registerError ? "border-red-700 bg-red-50" : "border-black"
+                  }`}
                 />
               </div>
             </div>

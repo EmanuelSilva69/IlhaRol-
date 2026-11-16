@@ -201,7 +201,12 @@ function App() {
         onToggleAuth={handleToggleAuth}
       />
 
-      <div className="mx-auto max-w-6xl px-4 py-8">{page}</div>
+      <div
+        key={`${route}-${eventId ?? "raiz"}`}
+        className="page-enter mx-auto max-w-6xl px-4 py-8"
+      >
+        {page}
+      </div>
 
       <Footer />
     </main>

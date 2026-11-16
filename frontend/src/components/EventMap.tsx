@@ -30,6 +30,8 @@ export function EventMap({
   const mapRef = useRef<L.Map | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
+  const seenIdsRef = useRef<Set<string>>(new Set());
+  const lastSignatureRef = useRef<string | null>(null);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -51,6 +53,8 @@ export function EventMap({
       mapRef.current = null;
       tileLayerRef.current = null;
       markersLayerRef.current = null;
+      lastSignatureRef.current = null;
+      seenIdsRef.current = new Set();
     };
     // O mapa é criado uma única vez; mudanças de centro/zoom não recriam a instância.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -82,19 +86,37 @@ export function EventMap({
       return;
     }
 
+    // Assinatura do que é visível: evita reconstruir a camada (e repetir a
+    // animação de queda) quando nada que apareça no mapa mudou.
+    const signature = events
+      .map(
+        (event) =>
+          `${event.id}:${event.title}:${event.category}:${event.latitude}:${event.longitude}`,
+      )
+      .join("|");
+
+    if (lastSignatureRef.current === signature) {
+      return;
+    }
+    lastSignatureRef.current = signature;
+
     layer.clearLayers();
 
-    for (const event of events) {
+    events.forEach((event, index) => {
       if (!Number.isFinite(event.latitude) || !Number.isFinite(event.longitude)) {
-        continue;
+        return;
       }
 
+      // Só anima a "queda" do pino na primeira vez que o evento aparece.
+      const isNew = !seenIdsRef.current.has(event.id);
+      seenIdsRef.current.add(event.id);
+
       L.marker([event.latitude, event.longitude], {
-        icon: createEventIcon(event),
+        icon: createEventIcon(event, index, isNew),
         keyboard: true,
         title: eventLabel(event),
       }).addTo(layer);
-    }
+    });
   }, [events]);
 
   return (

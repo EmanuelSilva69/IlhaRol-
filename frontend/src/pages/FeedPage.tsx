@@ -24,6 +24,7 @@ export function FeedPage({ events, onToggleFavorite }: FeedPageProps) {
   const [selectedCategory, setSelectedCategory] = useState("TODAS");
   const [selectedPeriod, setSelectedPeriod] = useState("TODOS");
   const [simulateEmptyState, setSimulateEmptyState] = useState(false);
+  const [pulsingId, setPulsingId] = useState<string | null>(null);
 
   const filteredEvents = simulateEmptyState
     ? []
@@ -261,7 +262,7 @@ export function FeedPage({ events, onToggleFavorite }: FeedPageProps) {
             {filteredEvents.length === 0 ? (
               <div
                 role="status"
-                className="my-6 border-2 border-dashed border-black bg-neutral-50 p-8 text-center"
+                className="anim-rise my-6 border-2 border-dashed border-black bg-neutral-50 p-8 text-center"
               >
                 <p className="text-base font-black uppercase text-black">
                   Nenhum evento corresponde aos filtros aplicados
@@ -281,10 +282,11 @@ export function FeedPage({ events, onToggleFavorite }: FeedPageProps) {
               </div>
             ) : (
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                {filteredEvents.map((event) => (
+                {filteredEvents.map((event, index) => (
                   <article
                     key={event.id}
-                    className="flex flex-col justify-between border-2 border-black bg-white p-4"
+                    className="anim-rise flex flex-col justify-between border-2 border-black bg-white p-4"
+                    style={{ animationDelay: `${Math.min(index, 7) * 45}ms` }}
                   >
                     <div>
                       <div className="flex flex-wrap items-center justify-between gap-1">
@@ -341,13 +343,21 @@ export function FeedPage({ events, onToggleFavorite }: FeedPageProps) {
 
                       <button
                         type="button"
-                        onClick={() => onToggleFavorite(event.id)}
+                        onClick={() => {
+                          onToggleFavorite(event.id);
+                          setPulsingId(event.id);
+                        }}
+                        onAnimationEnd={() =>
+                          setPulsingId((current) =>
+                            current === event.id ? null : current,
+                          )
+                        }
                         aria-pressed={event.isFavorite}
                         className={`cursor-pointer border-2 border-black px-3 py-1.5 text-xs font-black uppercase ${
                           event.isFavorite
                             ? "bg-black text-white"
                             : "bg-amber-100 text-black hover:bg-amber-200"
-                        }`}
+                        } ${pulsingId === event.id ? "anim-pop" : ""}`}
                       >
                         {event.isFavorite
                           ? "★ Salvo na Agenda (RF05)"

@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+
 interface NavbarProps {
   currentHash: string;
   favoritesCount: number;
@@ -5,6 +7,29 @@ interface NavbarProps {
   isAuthenticated: boolean;
   userName: string;
   onToggleAuth: () => void;
+}
+
+/**
+ * Marca por alguns instantes um contador que acabou de mudar, para que a
+ * animação de "pulo" rode apenas na alteração e não no primeiro carregamento.
+ */
+function useChangedFlag(value: number, duration = 420): boolean {
+  const previous = useRef(value);
+  const [changed, setChanged] = useState(false);
+
+  useEffect(() => {
+    if (previous.current === value) {
+      return;
+    }
+
+    previous.current = value;
+    setChanged(true);
+
+    const timer = window.setTimeout(() => setChanged(false), duration);
+    return () => window.clearTimeout(timer);
+  }, [value, duration]);
+
+  return changed;
 }
 
 const NAV_LINKS = [
@@ -33,6 +58,8 @@ export function Navbar({
   onToggleAuth,
 }: NavbarProps) {
   const normalizedHash = currentHash || "#/feed";
+  const favoritesChanged = useChangedFlag(favoritesCount);
+  const alertsChanged = useChangedFlag(unreadAlertsCount);
 
   return (
     <header className="border-b-2 border-black bg-white">
@@ -92,7 +119,20 @@ export function Navbar({
                 {item.label}
                 {item.href === "#/minha-agenda" && (
                   <span className="ml-1.5 inline-block border border-current px-1.5 py-0.2 text-[10px]">
-                    {favoritesCount} salvos / {unreadAlertsCount} alertas
+                    <span
+                      className={`inline-block ${favoritesChanged ? "anim-bump" : ""}`}
+                    >
+                      {favoritesCount}
+                    </span>{" "}
+                    salvos /{" "}
+                    <span
+                      className={`inline-block ${
+                        alertsChanged ? "anim-ping anim-bump" : ""
+                      }`}
+                    >
+                      {unreadAlertsCount}
+                    </span>{" "}
+                    alertas
                   </span>
                 )}
               </a>

@@ -1,6 +1,7 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useCallback, useState } from "react";
 
 import RfBadge from "../components/RfBadge";
+import Toast from "../components/Toast";
 import { SAO_LUIS_NEIGHBORHOODS } from "../data/mockEvents";
 import { categoryLabel } from "../lib/markers";
 import type {
@@ -48,6 +49,8 @@ export function OrganizerPage({
   const [bannerUrl, setBannerUrl] = useState("");
   const [feedback, setFeedback] = useState<string | null>(null);
   const [eventFeedback, setEventFeedback] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const closeToast = useCallback(() => setToast(null), []);
 
   const myEvents = events.filter((event) => event.organizerId === "org-carlos");
 
@@ -86,6 +89,7 @@ export function OrganizerPage({
     setFeedback(
       "Evento publicado com sucesso e vinculado ao seu perfil de organizador (RF02).",
     );
+    setToast("Evento publicado com sucesso (RF02)");
   };
 
   const handleCancel = (eventId: string) => {
@@ -93,6 +97,7 @@ export function OrganizerPage({
     setEventFeedback(
       "Publicação marcada como CANCELADA. A ficha continua disponível e os usuários que favoritaram recebem aviso (RF07 / RF11).",
     );
+    setToast("Publicação cancelada (RF07 / RF11)");
   };
 
   return (
@@ -393,6 +398,8 @@ export function OrganizerPage({
           </div>
         </section>
       </div>
+
+      {toast && <Toast message={toast} onClose={closeToast} />}
     </div>
   );
 }

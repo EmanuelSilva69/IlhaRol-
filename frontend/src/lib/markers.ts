@@ -99,13 +99,20 @@ export function eventLabel(event: MapEvent): string {
   return `${event.title} — ${categoryLabel(event.category)}`;
 }
 
-export function createEventIcon(event: MapEvent): L.DivIcon {
+export function createEventIcon(
+  event: MapEvent,
+  index = 0,
+  animate = true,
+): L.DivIcon {
   const label = eventLabel(event);
   const safeLabel = escapeHtml(label);
   const metrics = markerMetricsFor(event.category);
+  const delay = Math.min(index, 9) * 45;
+  const dropClass = animate ? " event-marker-drop" : "";
+  const dropStyle = animate ? ` style="animation-delay:${delay}ms"` : "";
 
   return L.divIcon({
-    html: `<div class="event-marker-inner" role="img" aria-label="${safeLabel}" title="${safeLabel}">${markerSvgFor(event.category)}</div>`,
+    html: `<div class="event-marker-inner${dropClass}"${dropStyle} role="img" aria-label="${safeLabel}" title="${safeLabel}">${markerSvgFor(event.category)}</div>`,
     className: "event-marker",
     iconSize: [metrics.width, metrics.height],
     iconAnchor: metrics.anchor,

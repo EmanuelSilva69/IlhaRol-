@@ -25,3 +25,121 @@ body {
 #root {
   min-height: 100vh;
 }
+
+/* ---------- Microinterações do protótipo ----------
+   Todas curtas (200-460ms), disparadas por ação do usuário e desligadas
+   quando o sistema pede movimento reduzido (RNF06).                      */
+
+@keyframes ir-pop {
+  0% { transform: scale(1) rotate(0); }
+  40% { transform: scale(1.16) rotate(-4deg); }
+  70% { transform: scale(0.96) rotate(2deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+.anim-pop {
+  display: inline-block;
+  animation: ir-pop 320ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes ir-bump {
+  0% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(-3px) scale(1.18); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+.anim-bump {
+  display: inline-block;
+  animation: ir-bump 340ms ease-out;
+}
+
+@keyframes ir-ping {
+  0% { box-shadow: 0 0 0 0 rgba(185, 28, 28, 0.55); }
+  100% { box-shadow: 0 0 0 7px rgba(185, 28, 28, 0); }
+}
+
+.anim-ping {
+  border-radius: 999px;
+  animation: ir-ping 900ms ease-out;
+}
+
+@keyframes ir-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.anim-rise {
+  animation: ir-rise 320ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+@keyframes ir-shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-6px); }
+  30% { transform: translateX(5px); }
+  45% { transform: translateX(-4px); }
+  60% { transform: translateX(3px); }
+  80% { transform: translateX(-2px); }
+}
+
+.anim-shake {
+  animation: ir-shake 460ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes ir-fade-scale {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.anim-fade-scale {
+  animation: ir-fade-scale 200ms ease-out both;
+}
+
+@keyframes ir-page-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter {
+  animation: ir-page-enter 240ms ease-out both;
+}
+
+@keyframes ir-star-fill {
+  0% { opacity: 0.2; transform: scale(0.55) rotate(-25deg); }
+  60% { opacity: 1; transform: scale(1.2) rotate(5deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+.anim-star {
+  display: inline-block;
+  animation: ir-star-fill 320ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+@keyframes ir-toast-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ir-toast-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(10px); }
+}
+
+.toast-enter {
+  animation: ir-toast-in 240ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.toast-leave {
+  animation: ir-toast-out 220ms ease-in both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

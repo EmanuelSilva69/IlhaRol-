@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import EventMap from "../components/EventMap";
 import RfBadge from "../components/RfBadge";
 import { categoryLabel } from "../lib/markers";
@@ -31,6 +31,16 @@ export function EventDetailsPage({
   const [reportDescription, setReportDescription] = useState("");
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [simulateNotFound, setSimulateNotFound] = useState(false);
+  const [ratingFlash, setRatingFlash] = useState(0);
+
+  useEffect(() => {
+    if (!ratingFlash) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => setRatingFlash(0), 1600);
+    return () => window.clearTimeout(timer);
+  }, [ratingFlash]);
 
   if (!event || simulateNotFound) {
     return (
@@ -294,7 +304,7 @@ export function EventDetailsPage({
       {showReportModal && (
         <section
           aria-label="Formulário de denúncia de conteúdo"
-          className="border-2 border-black bg-red-50 p-5"
+          className="anim-fade-scale border-2 border-black bg-red-50 p-5"
         >
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-black uppercase">
@@ -456,9 +466,10 @@ export function EventDetailsPage({
                 <select
                   id="review-rating"
                   value={rating}
-                  onChange={(e) =>
-                    setRating(Number(e.target.value) as 1 | 2 | 3 | 4 | 5)
-                  }
+                  onChange={(e) => {
+                    setRating(Number(e.target.value) as 1 | 2 | 3 | 4 | 5);
+                    setRatingFlash((current) => current + 1);
+                  }}
                   className="mt-1 w-full border-2 border-black bg-white px-2.5 py-1.5 text-xs font-bold"
                 >
                   <option value={5}>5 ★ — Excelente</option>
@@ -467,6 +478,24 @@ export function EventDetailsPage({
                   <option value={2}>2 ★ — Fraco</option>
                   <option value={1}>1 ★ — Ruim</option>
                 </select>
+                {ratingFlash > 0 && (
+                  <div
+                    aria-hidden="true"
+                    className="mt-1 flex gap-0.5 text-base leading-none"
+                  >
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <span
+                        key={`${ratingFlash}-${value}`}
+                        className={`anim-star ${
+                          value <= rating ? "text-amber-500" : "text-neutral-300"
+                        }`}
+                        style={{ animationDelay: `${(value - 1) * 60}ms` }}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div>
@@ -497,7 +526,7 @@ export function EventDetailsPage({
             {reviewFeedback && (
               <p
                 role="status"
-                className="border border-black bg-emerald-100 p-2 text-xs font-bold text-black"
+                className="anim-rise border border-black bg-emerald-100 p-2 text-xs font-bold text-black"
               >
                 {reviewFeedback}
               </p>

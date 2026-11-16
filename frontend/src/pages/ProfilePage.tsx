@@ -1,6 +1,7 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useCallback, useState } from "react";
 
 import RfBadge from "../components/RfBadge";
+import Toast from "../components/Toast";
 import { SAO_LUIS_NEIGHBORHOODS } from "../data/mockEvents";
 import type { UserNotification } from "../types/event";
 
@@ -40,6 +41,8 @@ export function ProfilePage({
   const [newEventsAlert, setNewEventsAlert] = useState(true);
   const [changesAlert, setChangesAlert] = useState(true);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const closeToast = useCallback(() => setToast(null), []);
 
   const unreadAlerts = notifications.filter((notification) => !notification.read);
 
@@ -56,6 +59,7 @@ export function ProfilePage({
     setFeedback(
       `Perfil atualizado. Bairro e interesses serão usados na seleção dos alertas (RF01b / RF08 / RF12).`,
     );
+    setToast("Perfil atualizado com sucesso (RF01b)");
   };
 
   return (
@@ -273,6 +277,8 @@ export function ProfilePage({
           </section>
         </div>
       </div>
+
+      {toast && <Toast message={toast} onClose={closeToast} />}
     </div>
   );
 }
