@@ -100,7 +100,10 @@ body {
 }
 
 .page-enter {
-  animation: ir-page-enter 240ms ease-out both;
+  /* fill-mode "backwards" (e não "both") para que o transform suma ao final
+     da animação: um transform permanente no wrapper quebraria o
+     posicionamento dos elementos position:fixed (o toast). */
+  animation: ir-page-enter 240ms ease-out backwards;
 }
 
 @keyframes ir-star-fill {

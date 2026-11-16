@@ -30,7 +30,7 @@ export function Toast({ message, onClose, duration = 3200 }: ToastProps) {
     <div
       role="status"
       aria-live="polite"
-      className={`fixed bottom-5 right-5 z-50 max-w-sm border-2 border-black bg-black px-4 py-3 text-xs font-black uppercase tracking-wide text-white shadow-[4px_4px_0_0_rgba(0,0,0,0.25)] ${
+      className={`fixed bottom-4 left-4 right-4 z-50 border-2 border-black bg-black px-4 py-3 text-xs font-black uppercase tracking-wide text-white shadow-[4px_4px_0_0_rgba(0,0,0,0.25)] sm:left-auto sm:right-5 sm:max-w-sm ${
         leaving ? "toast-leave" : "toast-enter"
       }`}
     >
