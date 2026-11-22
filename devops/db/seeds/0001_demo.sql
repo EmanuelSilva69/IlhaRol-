@@ -131,6 +131,28 @@ WHERE v.slug = 'praca-maria-aracangao'::citext
   AND u.email = 'produtor@example.com'::citext
 ON CONFLICT (slug) DO NOTHING;
 
+-- Evento cancelado para demonstrar o estado CANCELADO e os avisos (RF04/RF07/RF11).
+INSERT INTO app.events (
+    slug, title, description, venue_id, organizer_id,
+    starts_at, ends_at, price_cents, is_free, status, capacity
+)
+SELECT
+    'reggae-cancelado',
+    'Reggae na Lagoa — Edição Cancelada',
+    'Evento cancelado pelo organizador para demonstrar o estado de cancelamento e os avisos aos favoritos.',
+    v.id,
+    u.id,
+    now() + interval '8 days',
+    now() + interval '8 days 4 hours',
+    0,
+    true,
+    'cancelled',
+    300
+FROM app.venues v, app.users u
+WHERE v.slug = 'lagoa-da-jansen'::citext
+  AND u.email = 'produtor@example.com'::citext
+ON CONFLICT (slug) DO NOTHING;
+
 WITH mappings (event_slug, category_slug) AS (
     VALUES
         ('bumba-meu-boi-no-maria-aracangao', 'bumba-meu-boi'),
@@ -143,7 +165,8 @@ WITH mappings (event_slug, category_slug) AS (
         ('degustacao-da-gastronomia-maranhense', 'gastronomia'),
         ('visita-guiada-ao-museu', 'museus'),
         ('corrida-na-orla', 'orla-praia'),
-        ('feirinha-realizada', 'feirinhas-artesanato')
+        ('feirinha-realizada', 'feirinhas-artesanato'),
+        ('reggae-cancelado', 'reggae')
 )
 INSERT INTO app.event_categories (event_id, category_id, is_primary)
 SELECT e.id, c.id, true
@@ -175,14 +198,8 @@ ON CONFLICT DO NOTHING;
 
 WITH mappings (email, event_slug, rating, comment) AS (
     VALUES
-        ('ana@example.com', 'bumba-meu-boi-no-maria-aracangao', 5, 'Festa linda, muita energia.'),
-        ('ana@example.com', 'reggae-na-lagoa', 4, 'Bom som e pôr do sol incrível.'),
-        ('bruno@example.com', 'reggae-na-lagoa', 5, 'Melhor reggae da orla.'),
-        ('bruno@example.com', 'samba-no-centro-historico', 4, 'Roda animada no Centro.'),
-        ('carla@example.com', 'teatro-arthur-azevedo-em-cena', 5, 'Espetáculo emocionante.'),
-        ('carla@example.com', 'noite-de-tambor-de-crioula', 5, 'Tambor de crioula é patrimônio.'),
-        ('produtor@example.com', 'feirinha-da-praca-maria-aracangao', 4, 'Boa variedade de artesanato.'),
-        ('ana@example.com', 'feirinha-realizada', 5, 'Edição muito bem organizada, com boa comida e artesanato.')
+        ('ana@example.com', 'feirinha-realizada', 5, 'Edição muito bem organizada, com boa comida e artesanato.'),
+        ('produtor@example.com', 'feirinha-realizada', 4, 'Boa estrutura e circulação; recomendo a edição.')
 )
 INSERT INTO app.reviews (event_id, user_id, rating, comment)
 SELECT e.id, u.id, m.rating, m.comment
@@ -247,5 +264,37 @@ WHERE email IN (
     'admin@ilharole.dev'
 )
 AND password_hash LIKE '$2%';
+
+-- Notificação de demonstração para o produtor.
+INSERT INTO app.notifications (user_id, event_id, kind, payload)
+SELECT u.id, e.id, 'event_reminder',
+       '{"mensagem": "Novo evento de Bumba Meu Boi compatível com seus interesses."}'::jsonb
+FROM app.users u, app.events e
+WHERE u.email = 'produtor@example.com'::citext
+  AND e.slug = 'bumba-meu-boi-no-maria-aracangao'::citext
+  AND NOT EXISTS (
+      SELECT 1 FROM app.notifications n
+      WHERE n.user_id = u.id
+        AND n.event_id = e.id
+        AND n.kind = 'event_reminder'
+        AND n.payload->>'mensagem' LIKE '%Bumba Meu Boi compatível%'
+  );
+
+-- Denúncia de demonstração para a central de perfil.
+INSERT INTO app.reports (
+    reporter_id, target_type, event_id, reason, description, status
+)
+SELECT u.id, 'EVENTO', e.id, 'INFORMACAO_FALSA',
+       'Denúncia de demonstração: horário divergente do divulgado.',
+       'EM_ANALISE'
+FROM app.users u, app.events e
+WHERE u.email = 'produtor@example.com'::citext
+  AND e.slug = 'reggae-cancelado'::citext
+  AND NOT EXISTS (
+      SELECT 1 FROM app.reports r
+      WHERE r.reporter_id = u.id
+        AND r.event_id = e.id
+        AND r.description = 'Denúncia de demonstração: horário divergente do divulgado.'
+  );
 
 SELECT 'IlhaRolê: seed de demonstração aplicado' AS status;
