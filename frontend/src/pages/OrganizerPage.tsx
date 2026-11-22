@@ -12,6 +12,8 @@ import type {
 
 interface OrganizerPageProps {
   events: CulturalEvent[];
+  organizerId: string;
+  organizerName: string;
   onCancelEvent: (eventId: string) => void;
   onPublishEvent: (input: NewEventInput) => void;
 }
@@ -34,6 +36,8 @@ const DEFAULT_BANNER =
 
 export function OrganizerPage({
   events,
+  organizerId,
+  organizerName,
   onCancelEvent,
   onPublishEvent,
 }: OrganizerPageProps) {
@@ -52,7 +56,7 @@ export function OrganizerPage({
   const [toast, setToast] = useState<string | null>(null);
   const closeToast = useCallback(() => setToast(null), []);
 
-  const myEvents = events.filter((event) => event.organizerId === "org-carlos");
+  const myEvents = events.filter((event) => event.organizerId === organizerId);
 
   const handlePublish = (formEvent: FormEvent) => {
     formEvent.preventDefault();
@@ -303,7 +307,7 @@ export function OrganizerPage({
                 </p>
               </div>
               <span className="border border-black bg-amber-200 px-2 py-0.5 text-[10px] font-black uppercase">
-                Organizador: Carlos
+                Organizador: {organizerName}
               </span>
             </div>
 

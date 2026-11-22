@@ -98,5 +98,28 @@ describe("createEventIcon", () => {
     expect(icon.options.html).not.toContain("<img src=x");
     expect(icon.options.html).toContain("Bumba Meu Boi");
     expect(icon.options.html).toContain("ir-bumba-aura");
+    expect(icon.options.html).toContain(
+      '<div class="event-marker-frame event-marker-drop"',
+    );
+    expect(icon.options.html).toContain('<div class="event-marker-inner"');
+  });
+
+  it("separa a animação de queda do elemento que gira no hover", () => {
+    const icon = createEventIcon(
+      {
+        id: "2",
+        title: "Evento sem animação",
+        category: "teatro",
+        latitude: -2.53,
+        longitude: -44.3,
+      },
+      3,
+      false,
+    );
+
+    expect(icon.options.html).toContain('<div class="event-marker-frame">');
+    expect(icon.options.html).not.toContain("event-marker-drop");
+    expect(icon.options.html).not.toContain("animation-delay");
+    expect(icon.options.html).toContain('<div class="event-marker-inner"');
   });
 });

@@ -127,6 +127,15 @@ export const INITIAL_EVENTS: CulturalEvent[] = [
           "Localização super fácil pelo mapa do IlhaRolê. Ótimo para comprar lembranças e provar guaraná Jesus gelado.",
         createdAt: "09/11/2026 18:05",
       },
+      {
+        id: "rev-3",
+        author: "Emanuel Lopes (Você)",
+        authorId: "user-emanuel",
+        rating: 5,
+        comment:
+          "Feira muito bem organizada, com boa circulação e atrações para toda a família.",
+        createdAt: "10/11/2026 10:10",
+      },
     ],
   },
   {
@@ -285,6 +294,26 @@ export const INITIAL_EVENTS: CulturalEvent[] = [
       "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=900&q=80",
     organizer: "Coletivo Audiovisual Upaon",
     organizerId: "org-cinema",
+    status: "ATIVO",
+    isFavorite: false,
+    reviews: [],
+  },
+  {
+    id: "samba-2",
+    title: "Roda de Samba do IlhaRolê — Edição de Dezembro",
+    description:
+      "Roda de samba e pagode organizada pela equipe do IlhaRolê, com músicos convidados da cena local e espaço aberto para a comunidade.",
+    category: "samba",
+    date: "2026-12-06",
+    time: "18:00 às 22:00",
+    location: "Praça Nauro Machado — Rua da Estrela",
+    neighborhood: "Centro Histórico",
+    latitude: -2.5294,
+    longitude: -44.3025,
+    bannerUrl:
+      "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=900&q=80",
+    organizer: "Emanuel Lopes",
+    organizerId: "user-emanuel",
     status: "ATIVO",
     isFavorite: false,
     reviews: [],

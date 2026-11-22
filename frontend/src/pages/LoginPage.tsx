@@ -2,9 +2,16 @@ import { type FormEvent, useState } from "react";
 
 import RfBadge from "../components/RfBadge";
 import { SAO_LUIS_NEIGHBORHOODS } from "../data/mockEvents";
+import {
+  forgotPassword,
+  isApiError,
+  login as apiLogin,
+  register as apiRegister,
+  type AuthResult,
+} from "../lib/api";
 
 interface LoginPageProps {
-  onLogin: (name: string) => void;
+  onLogin: (result: AuthResult) => void;
 }
 
 const INTERESTS = [
@@ -37,6 +44,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     "Bumba Meu Boi",
     "Música e reggae",
   ]);
+  const [registerIsProducer, setRegisterIsProducer] = useState(false);
   const [registerFeedback, setRegisterFeedback] = useState<string | null>(null);
   const [registerError, setRegisterError] = useState(false);
   const [registerShake, setRegisterShake] = useState(0);
@@ -52,7 +60,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     );
   };
 
-  const handleLogin = (event: FormEvent) => {
+  const handleLogin = async (event: FormEvent) => {
     event.preventDefault();
     if (!loginEmail.trim() || !loginPassword.trim()) {
       setLoginError(true);
@@ -62,14 +70,27 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       );
       return;
     }
+
     setLoginError(false);
-    onLogin("Emanuel Lopes");
-    setLoginFeedback(
-      "Sessão iniciada com sucesso. Token JWT simulado ativo no cabeçalho (RF01a).",
-    );
+
+    try {
+      const result = await apiLogin(loginEmail.trim(), loginPassword);
+      onLogin(result);
+      setLoginFeedback(
+        `Sessão iniciada com sucesso para ${result.profile.name}. Token JWT ativo (RF01a).`,
+      );
+    } catch (error) {
+      setLoginError(true);
+      setLoginShake((current) => current + 1);
+      setLoginFeedback(
+        isApiError(error)
+          ? error.message
+          : "Não foi possível conectar à API. Verifique se o back-end está no ar.",
+      );
+    }
   };
 
-  const handleRegister = (event: FormEvent) => {
+  const handleRegister = async (event: FormEvent) => {
     event.preventDefault();
     if (!registerName.trim() || !registerEmail.trim() || !registerPassword.trim()) {
       setRegisterError(true);
@@ -79,20 +100,63 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       );
       return;
     }
+    if (registerPassword.length < 8) {
+      setRegisterError(true);
+      setRegisterShake((current) => current + 1);
+      setRegisterFeedback("A senha deve ter pelo menos 8 caracteres (RNF03).");
+      return;
+    }
+
     setRegisterError(false);
-    onLogin(registerName.trim());
-    setRegisterFeedback(
-      `Conta criada para ${registerName.trim()}. Bairro e interesses serão usados nos alertas (RF01b / RF08).`,
-    );
+
+    try {
+      const result = await apiRegister({
+        name: registerName.trim(),
+        email: registerEmail.trim(),
+        password: registerPassword,
+        neighborhood: registerNeighborhood,
+        interests: registerInterests,
+        role: registerIsProducer ? "producer" : "visitor",
+      });
+      onLogin(result);
+      setRegisterFeedback(
+        `Conta criada para ${result.profile.name}. Perfil e preferências salvos no banco (RF01a / RF01b).`,
+      );
+    } catch (error) {
+      setRegisterError(true);
+      setRegisterShake((current) => current + 1);
+      setRegisterFeedback(
+        isApiError(error)
+          ? error.message
+          : "Não foi possível cadastrar agora. Verifique a API e tente novamente.",
+      );
+    }
   };
 
-  const handleRecovery = (event: FormEvent) => {
+  const handleRecovery = async (event: FormEvent) => {
     event.preventDefault();
-    setRecoveryFeedback(
-      recoveryEmail.trim()
-        ? `Link de uso único enviado para ${recoveryEmail.trim()} com prazo de validade (RF09).`
-        : "Informe o e-mail cadastrado para receber o link de redefinição (RF09).",
-    );
+
+    if (!recoveryEmail.trim()) {
+      setRecoveryFeedback(
+        "Informe o e-mail cadastrado para receber o link de redefinição (RF09).",
+      );
+      return;
+    }
+
+    try {
+      const result = await forgotPassword(recoveryEmail.trim());
+      setRecoveryFeedback(
+        result.reset_token
+          ? `${result.message} Token de desenvolvimento: ${result.reset_token}`
+          : result.message,
+      );
+    } catch (error) {
+      setRecoveryFeedback(
+        isApiError(error)
+          ? error.message
+          : "Não foi possível solicitar a recuperação agora.",
+      );
+    }
   };
 
   return (
@@ -161,12 +225,28 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               />
             </div>
 
-            <button
-              type="submit"
-              className="w-full cursor-pointer border-2 border-black bg-black px-4 py-2 text-xs font-black uppercase text-white hover:bg-neutral-800"
-            >
-              Entrar (RF01a)
-            </button>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <button
+                type="submit"
+                className="w-full cursor-pointer border-2 border-black bg-black px-4 py-2 text-xs font-black uppercase text-white hover:bg-neutral-800"
+              >
+                Entrar (RF01a)
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginEmail("produtor@example.com");
+                  setLoginPassword("demo1234");
+                }}
+                className="w-full cursor-pointer border-2 border-black bg-amber-200 px-4 py-2 text-xs font-black uppercase text-black hover:bg-amber-300"
+              >
+                Preencher conta demo
+              </button>
+            </div>
+            <p className="text-[11px] text-neutral-600">
+              Conta de demonstração: <strong>produtor@example.com</strong> /{" "}
+              <strong>demo1234</strong>
+            </p>
           </form>
 
           {loginFeedback && (
@@ -285,6 +365,23 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 ))}
               </select>
             </div>
+
+            <label className="flex cursor-pointer items-start gap-2 border border-black bg-neutral-50 p-2 text-[11px]">
+              <input
+                type="checkbox"
+                checked={registerIsProducer}
+                onChange={(event) =>
+                  setRegisterIsProducer(event.target.checked)
+                }
+                className="mt-0.5 accent-black"
+              />
+              <span>
+                <strong className="block uppercase">
+                  Sou produtor cultural
+                </strong>
+                Quero publicar e gerenciar eventos na plataforma (RF02 / RF07).
+              </span>
+            </label>
 
             <fieldset>
               <legend className="text-xs font-bold uppercase">

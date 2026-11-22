@@ -103,4 +103,7 @@ foreach ($migration in $pending) {
     ) | Out-Null
 }
 
+# Reaplica grants/revokes nas tabelas criadas pelas migrações.
+& (Join-Path $PSScriptRoot "db-roles.ps1")
+
 Write-Host "Migrações aplicadas: $($pending.Count)."

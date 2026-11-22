@@ -99,7 +99,7 @@ avaliações e notificações. É idempotente.
 
 | Schema | Conteúdo |
 | --- | --- |
-| `app` | usuários, categorias, locais, eventos, favoritos, avaliações, notificações |
+| `app` | usuários, interesses, preferências, categorias, locais, eventos, favoritos, avaliações, notificações, denúncias e tokens de recuperação |
 | `audit` | log genérico de alterações e retenção |
 | `analytics` | views, materialized view e painel de saúde |
 

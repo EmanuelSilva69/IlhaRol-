@@ -1,58 +1,83 @@
-# Back-end — IlhaRolê (protótipo)
+# Back-end — IlhaRolê
 
-Esqueleto da API em FastAPI. Este back-end é intencionalmente mínimo: serve para a equipe validar a stack e evoluir os endpoints de negócio.
+API em FastAPI com autenticação JWT, Argon2 e persistência no PostgreSQL.
+A camada de banco é versionada em `devops/db/migrations/` e o seed de
+demonstração fica em `devops/db/seeds/`.
 
-## O que existe
+## Rotas
 
-| Rota | Descrição |
-| --- | --- |
-| `GET /` | Identifica a API como protótipo e aponta para a documentação |
-| `GET /health` | Verifica a API e a conexão com o PostgreSQL |
-| `GET /docs` | Swagger UI gerado pelo FastAPI |
+| Método | Rota | Autenticação | Descrição |
+| --- | --- | --- | --- |
+| `GET` | `/` | pública | Identifica a API |
+| `GET` | `/health` | pública | Verifica a conexão com o banco |
+| `GET` | `/docs` | pública | Swagger UI |
+| `POST` | `/api/auth/register` | pública | Cria conta e retorna JWT |
+| `POST` | `/api/auth/login` | pública | Autentica e retorna JWT |
+| `GET` | `/api/auth/me` | JWT | Perfil do usuário autenticado |
+| `POST` | `/api/auth/logout` | pública | Encerra a sessão no cliente |
+| `POST` | `/api/auth/forgot-password` | pública | Gera token de recuperação |
+| `POST` | `/api/auth/reset-password` | pública | Redefine a senha com token |
+| `DELETE` | `/api/auth/account` | JWT | Desativa a própria conta |
+| `GET` | `/api/categorias` | pública | Lista categorias |
+| `GET` | `/api/bairros` | pública | Lista bairros com locais cadastrados |
+| `GET` | `/api/eventos` | opcional | Feed com busca, bairro, categoria e período |
+| `GET` | `/api/eventos/{id}` | opcional | Detalhes do evento |
+| `POST` | `/api/eventos` | produtor/admin | Publica evento |
+| `PATCH` | `/api/eventos/{id}` | criador/admin | Edita evento e notifica favoritos |
+| `POST` | `/api/eventos/{id}/cancelar` | criador/admin | Cancela e notifica favoritos |
+| `POST` | `/api/eventos/{id}/favorito` | JWT | Adiciona à agenda |
+| `DELETE` | `/api/eventos/{id}/favorito` | JWT | Remove da agenda |
+| `GET` | `/api/eventos/{id}/avaliacoes` | pública | Lista avaliações |
+| `POST` | `/api/eventos/{id}/avaliacoes` | JWT | Avalia evento realizado |
+| `GET` | `/api/me/perfil` | JWT | Perfil, interesses e preferências |
+| `PATCH` | `/api/me/perfil` | JWT | Atualiza dados do próprio perfil |
+| `POST` | `/api/me/senha` | JWT | Altera a senha do usuário |
+| `GET` | `/api/me/preferencias` | JWT | Preferências de alerta |
+| `PUT` | `/api/me/preferencias` | JWT | Atualiza preferências de alerta |
+| `GET` | `/api/me/agenda` | JWT | Eventos favoritados |
+| `GET` | `/api/me/notificacoes` | JWT | Notificações do usuário |
+| `POST` | `/api/me/notificacoes/lidas` | JWT | Marca notificações como lidas |
+| `GET` | `/api/me/denuncias` | JWT | Denúncias do usuário |
+| `POST` | `/api/denuncias` | JWT | Denuncia evento ou avaliação |
 
-Não há autenticação, CRUD de eventos, favoritos, avaliações ou feed. Esses fluxos ficam para as próximas etapas.
+## Autenticação
 
-## Estrutura
+- Senhas com Argon2 e salt individual.
+- JWT HS256 assinado com `JWT_SECRET`; expiração em `JWT_EXPIRE_MINUTES`.
+- Envie `Authorization: Bearer <token>` nas rotas protegidas.
+- `GET /api/eventos` aceita token opcional para preencher `is_favorite`.
+
+Conta de demonstração criada pelo seed:
 
 ```text
-backend/
-├── app/
-│   ├── config.py      # configuração via variáveis de ambiente
-│   ├── db.py          # engine e sessão assíncronos
-│   ├── main.py        # aplicação, CORS e rota raiz
-│   └── routers/
-│       └── health.py  # verificação de saúde
-├── tests/
-├── pytest.ini
-└── requirements.txt
+produtor@example.com / demo1234   (produtor)
+ana@example.com      / demo1234   (espectadora)
 ```
-
-O `Dockerfile` fica em `devops/docker/backend.Dockerfile`.
 
 ## Executar
 
-A partir da raiz do repositório:
-
 ```bash
 docker compose -f devops/docker-compose.yml up -d db api
-curl http://localhost:8000/
 curl http://localhost:8000/health
 ```
 
-O código é montado como volume; alterações em `backend/` são recarregadas pelo Uvicorn.
+O código é montado como volume; alterações em `backend/` são recarregadas pelo
+Uvicorn. Se `requirements.txt` mudar, reconstrua:
 
-## Pool de conexões
+```bash
+docker compose -f devops/docker-compose.yml up -d --build api
+```
 
-A API lê o pool de `devops/.env` (ou do ambiente):
+## Banco
 
-| Variável | Padrão | Uso |
-| --- | --- | --- |
-| `DB_POOL_SIZE` | `10` | Conexões mantidas no pool |
-| `DB_MAX_OVERFLOW` | `20` | Conexões extras permitidas |
-| `DB_POOL_RECYCLE` | `1800` | Reciclagem de conexões (segundos) |
-| `DB_CONNECT_TIMEOUT` | `5` | Timeout de conexão (segundos) |
-| `DB_STATEMENT_CACHE_SIZE` | `100` | Cache de prepared statements do asyncpg; use `0` com PgBouncer em `pool_mode=transaction` |
-| `DB_APPLICATION_NAME` | `ilharole-api` | Nome visível em `pg_stat_activity` |
+O back-end usa as tabelas `app.*` criadas pelas migrações. Antes de usar a API
+em um volume novo ou após um reset:
+
+```bash
+docker compose -f devops/docker-compose.yml up -d db
+./devops/scripts/db-migrate.sh
+./devops/scripts/db-seed.sh
+```
 
 ## Testes
 
@@ -60,9 +85,6 @@ A API lê o pool de `devops/.env` (ou do ambiente):
 docker compose -f devops/docker-compose.yml run --rm api pytest -q
 ```
 
-## Próximos passos
-
-- Definir os modelos SQLAlchemy e as migrações do banco.
-- Implementar autenticação e autorização.
-- Criar os endpoints de eventos, feed, favoritos e avaliações.
-- Adicionar testes de integração com o PostgreSQL real.
+A suíte cobre health, contrato OpenAPI, hash/verify Argon2, JWT e helpers de
+slug/data. Os fluxos com PostgreSQL foram validados manualmente contra o banco
+local e estão descritos em `devops/db/README.md`.

@@ -48,6 +48,11 @@ GRANT SELECT ON ALL TABLES IN SCHEMA audit TO :"readonly_user";
 -- A aplicação não deve alterar o controle de migrações.
 REVOKE INSERT, UPDATE, DELETE ON app.schema_migrations FROM :"app_user";
 
+-- Tokens de recuperação não são expostos ao papel somente leitura.
+-- O \gexec só executa quando a tabela já existe (volume novo cria depois).
+SELECT format('REVOKE SELECT ON app.password_reset_tokens FROM %I', :'readonly_user')
+WHERE to_regclass('app.password_reset_tokens') IS NOT NULL \gexec
+
 -- Objetos criados depois (migrações e seeds rodam como o owner do banco).
 ALTER DEFAULT PRIVILEGES FOR ROLE :"owner" IN SCHEMA app
     GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO :"app_user";

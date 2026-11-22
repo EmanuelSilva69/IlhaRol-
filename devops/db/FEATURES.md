@@ -32,6 +32,7 @@ de `profiles` do Docker Compose.
 | 22 | Backup automático com retenção | profile `backup` |
 | 23 | Métricas Prometheus | profile `observability` |
 | 24 | CI de migrações, seed, verificação e smoke tests | `.github/workflows/db-ci.yml` |
+| 25 | Modelo de perfil: interesses, preferências, denúncias e tokens de recuperação | `db/migrations/0005_profile_and_account.sql` |
 
 ## Comandos do dia a dia
 

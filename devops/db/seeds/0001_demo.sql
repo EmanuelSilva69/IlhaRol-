@@ -34,6 +34,17 @@ VALUES
     ('20000000-0000-4000-8000-000000000005', 'casa-das-minas',        'Casa das Minas',           'Rua de São Pantaleão, 125', 'Centro',       -2.533000, -44.300700)
 ON CONFLICT (slug) DO NOTHING;
 
+-- Alinha os bairros do seed com os nomes usados no front-end.
+UPDATE app.venues
+SET neighborhood = 'Centro Histórico'
+WHERE slug IN (
+    'praca-maria-aracangao',
+    'teatro-arthur-azevedo',
+    'centro-historico',
+    'casa-das-minas'
+)
+AND neighborhood = 'Centro';
+
 WITH data (slug, title, description, venue_slug, category_slug, organizer_email, starts_at, ends_at, price_cents, is_free, status, capacity) AS (
     VALUES
         ('bumba-meu-boi-no-maria-aracangao', 'Bumba Meu Boi no Maria Aragão',
@@ -98,6 +109,28 @@ JOIN app.venues v ON v.slug = d.venue_slug::citext
 JOIN app.users u ON u.email = d.organizer_email::citext
 ON CONFLICT (slug) DO NOTHING;
 
+-- Evento já realizado para demonstrar avaliações pós-evento (RF06).
+INSERT INTO app.events (
+    slug, title, description, venue_id, organizer_id,
+    starts_at, ends_at, price_cents, is_free, status, capacity
+)
+SELECT
+    'feirinha-realizada',
+    'Feirinha São Luís — Edição de Novembro',
+    'Edição já realizada da feirinha, com gastronomia, artesanato e apresentações culturais.',
+    v.id,
+    u.id,
+    now() - interval '7 days',
+    now() - interval '7 days' + interval '6 hours',
+    0,
+    true,
+    'finished',
+    300
+FROM app.venues v, app.users u
+WHERE v.slug = 'praca-maria-aracangao'::citext
+  AND u.email = 'produtor@example.com'::citext
+ON CONFLICT (slug) DO NOTHING;
+
 WITH mappings (event_slug, category_slug) AS (
     VALUES
         ('bumba-meu-boi-no-maria-aracangao', 'bumba-meu-boi'),
@@ -109,7 +142,8 @@ WITH mappings (event_slug, category_slug) AS (
         ('cinema-ao-ar-livre-na-orla', 'cinema-audiovisual'),
         ('degustacao-da-gastronomia-maranhense', 'gastronomia'),
         ('visita-guiada-ao-museu', 'museus'),
-        ('corrida-na-orla', 'orla-praia')
+        ('corrida-na-orla', 'orla-praia'),
+        ('feirinha-realizada', 'feirinhas-artesanato')
 )
 INSERT INTO app.event_categories (event_id, category_id, is_primary)
 SELECT e.id, c.id, true
@@ -123,6 +157,7 @@ WITH mappings (email, event_slug) AS (
         ('ana@example.com', 'bumba-meu-boi-no-maria-aracangao'),
         ('ana@example.com', 'reggae-na-lagoa'),
         ('ana@example.com', 'feirinha-da-praca-maria-aracangao'),
+        ('ana@example.com', 'feirinha-realizada'),
         ('bruno@example.com', 'reggae-na-lagoa'),
         ('bruno@example.com', 'samba-no-centro-historico'),
         ('bruno@example.com', 'cinema-ao-ar-livre-na-orla'),
@@ -146,7 +181,8 @@ WITH mappings (email, event_slug, rating, comment) AS (
         ('bruno@example.com', 'samba-no-centro-historico', 4, 'Roda animada no Centro.'),
         ('carla@example.com', 'teatro-arthur-azevedo-em-cena', 5, 'Espetáculo emocionante.'),
         ('carla@example.com', 'noite-de-tambor-de-crioula', 5, 'Tambor de crioula é patrimônio.'),
-        ('produtor@example.com', 'feirinha-da-praca-maria-aracangao', 4, 'Boa variedade de artesanato.')
+        ('produtor@example.com', 'feirinha-da-praca-maria-aracangao', 4, 'Boa variedade de artesanato.'),
+        ('ana@example.com', 'feirinha-realizada', 5, 'Edição muito bem organizada, com boa comida e artesanato.')
 )
 INSERT INTO app.reviews (event_id, user_id, rating, comment)
 SELECT e.id, u.id, m.rating, m.comment
@@ -174,5 +210,42 @@ WHERE NOT EXISTS (
       AND n.kind = d.kind
       AND n.payload = d.payload
 );
+
+-- Perfil: preferências padrão e interesses culturais.
+INSERT INTO app.notification_preferences (user_id)
+SELECT id FROM app.users
+ON CONFLICT (user_id) DO NOTHING;
+
+WITH mappings (email, category_slug) AS (
+    VALUES
+        ('ana@example.com', 'bumba-meu-boi'),
+        ('ana@example.com', 'reggae'),
+        ('ana@example.com', 'tambor-de-crioula'),
+        ('bruno@example.com', 'reggae'),
+        ('bruno@example.com', 'samba-pagode'),
+        ('carla@example.com', 'teatro'),
+        ('carla@example.com', 'gastronomia'),
+        ('produtor@example.com', 'bumba-meu-boi'),
+        ('produtor@example.com', 'feirinhas-artesanato')
+)
+INSERT INTO app.user_interests (user_id, category_id)
+SELECT u.id, c.id
+FROM mappings m
+JOIN app.users u ON u.email = m.email::citext
+JOIN app.categories c ON c.slug = m.category_slug::citext
+ON CONFLICT DO NOTHING;
+
+-- Usuários de demonstração usam Argon2 (RNF03). O WHERE evita sobrescrever
+-- uma senha já alterada para Argon2.
+UPDATE app.users
+SET password_hash = '$argon2id$v=19$m=65536,t=3,p=4$pY1oHv3C+N/89eRdPLu3yQ$RXqX/0ipztEqWGbc8b609G69+A0uNIfj+CjkxAIZqWQ'
+WHERE email IN (
+    'ana@example.com',
+    'bruno@example.com',
+    'carla@example.com',
+    'produtor@example.com',
+    'admin@ilharole.dev'
+)
+AND password_hash LIKE '$2%';
 
 SELECT 'IlhaRolê: seed de demonstração aplicado' AS status;

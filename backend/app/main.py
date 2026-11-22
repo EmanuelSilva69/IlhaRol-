@@ -2,11 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
-from .routers import health
+from .routers import auth, categories, events, health, profile, reports
 
 settings = get_settings()
 
-app = FastAPI(title="IlhaRolê API", version="0.1.0")
+app = FastAPI(title="IlhaRolê API", version="0.2.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,12 +21,18 @@ app.add_middleware(
 )
 
 app.include_router(health.router)
+app.include_router(auth.router)
+app.include_router(categories.router)
+app.include_router(events.router)
+app.include_router(profile.router)
+app.include_router(reports.router)
 
 
 @app.get("/")
 async def root() -> dict[str, str]:
     return {
-        "service": "IlhaRolê API (protótipo)",
+        "service": "IlhaRolê API",
+        "version": "0.2.0",
         "docs": "/docs",
-        "message": "Esqueleto da API. Endpoints de negócio serão implementados pelas equipes.",
+        "message": "API com autenticação, eventos, perfil e módulos dependentes do banco.",
     }

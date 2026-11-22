@@ -30,7 +30,7 @@
 ## 4. Qualidade e documentação
 
 - [x] 4.1 Adicionar workflow de CI para init, migrações, seed, verificação e smoke tests.
-- [x] 4.2 Criar `devops/db/FEATURES.md` com o catálogo de 24 features.
+- [x] 4.2 Criar `devops/db/FEATURES.md` com o catálogo de 25 features.
 - [x] 4.3 Atualizar `devops/db/README.md`, `devops/README.md`, `README.md` e `backend/README.md`.
 - [x] 4.4 Validar sintaxe SQL com parser PostgreSQL e sintaxe dos scripts PowerShell/Bash.
 - [x] 4.5 Testar init, migrações, seed, reset, restore, check, stats e smoke tests em volume novo.

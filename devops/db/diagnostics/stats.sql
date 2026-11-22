@@ -78,6 +78,7 @@ SELECT
     (SELECT count(*) FROM app.favorites) AS favorites,
     (SELECT count(*) FROM app.reviews) AS reviews,
     (SELECT count(*) FROM app.notifications) AS notifications,
+    (SELECT count(*) FROM app.reports) AS reports,
     (SELECT count(*) FROM audit.log) AS audit_rows;
 
 \echo ''

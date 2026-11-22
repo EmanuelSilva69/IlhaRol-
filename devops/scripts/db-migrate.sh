@@ -83,4 +83,7 @@ for item in "${pending[@]}"; do
     >/dev/null
 done
 
+# Reaplica grants/revokes nas tabelas criadas pelas migrações.
+"$SCRIPT_DIR/db-roles.sh"
+
 echo "Migrações aplicadas: ${#pending[@]}."

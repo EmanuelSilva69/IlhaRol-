@@ -91,7 +91,7 @@ export function Navbar({
               onClick={onToggleAuth}
               className="cursor-pointer border border-black bg-black px-3 py-1 text-xs font-bold uppercase text-white hover:bg-neutral-800 focus:outline-2 focus:outline-offset-2 focus:outline-black"
             >
-              {isAuthenticated ? "Simular Logout" : "Simular Login"}
+              {isAuthenticated ? "Sair" : "Entrar"}
             </button>
           </div>
         </div>

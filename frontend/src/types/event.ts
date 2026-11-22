@@ -22,9 +22,45 @@ export type NotificationType =
 export interface EventReview {
   id: string;
   author: string;
+  authorId?: string;
   rating: 1 | 2 | 3 | 4 | 5;
   comment: string;
   createdAt: string;
+}
+
+export type UserRole = "visitor" | "producer" | "admin";
+
+export interface NotificationPreferences {
+  newEvents: boolean;
+  eventChanges: boolean;
+  weeklySummary: boolean;
+}
+
+export interface UserProfile {
+  id: string;
+  organizerId: string;
+  name: string;
+  email: string;
+  neighborhood: string;
+  interests: string[];
+  bio: string;
+  role: UserRole;
+  memberSince: string;
+  notificationPreferences: NotificationPreferences;
+}
+
+export type ReportTarget = "EVENTO" | "AVALIACAO";
+
+export interface UserReport {
+  id: string;
+  eventId: string;
+  eventTitle: string;
+  targetType: ReportTarget;
+  reviewId?: string;
+  reason: string;
+  description: string;
+  createdAt: string;
+  status: "EM_ANALISE";
 }
 
 export interface MapEvent {

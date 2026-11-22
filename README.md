@@ -12,9 +12,39 @@ O restante do produto (autenticação, CRUD de eventos, feed, favoritos, avalia�
 
 Este repositório é um **protótipo**, não um site final:
 
-- o front-end é um wireframe preto e branco, com textos como “HEADER AQUI” e “possível local de informação”;
-- o back-end expõe apenas a rota raiz e a verificação de saúde;
-- o mapa Leaflet, os temas e os marcadores animados são o único componente funcional da interface.
+- o front-end é um protótipo navegável em preto e branco, com seis telas (feed/mapa, detalhes, login, agenda, organizador e perfil);
+- o back-end já expõe autenticação JWT, perfil, eventos, favoritos, avaliações, notificações, denúncias e recuperação de senha;
+- o front-end consome a API quando ela está disponível e mantém um fallback mockado para o protótipo;
+- o mapa Leaflet, os filtros, a agenda e a central de perfil funcionam sobre esse estado.
+
+## API e progresso da Sprint 1
+
+A API FastAPI usa PostgreSQL, Argon2 e JWT. O feed, o login/cadastro e o perfil
+já conversam com o banco; favoritos, avaliações e denúncias usam as rotas
+autenticadas.
+
+| RF | Situação |
+| --- | --- |
+| RF01a — cadastro, login e JWT | concluído |
+| RF01b — perfil, bairro, bio e interesses | concluído |
+| RF02 — publicar evento | concluído na API e na área do organizador |
+| RF03 — feed, busca e filtros | concluído no front-end e na API |
+| RF04 — detalhes com mapa | concluído |
+| RF05 — favoritos | concluído |
+| RF06 — avaliações pós-evento | concluído |
+| RF07 — gerenciar eventos próprios | parcial: cancelamento via API; edição de campos ainda simulada |
+| RF08 — alertas de novos eventos | concluído no back-end (categoria/bairro/Preferências) |
+| RF09 — recuperação de acesso | parcial: API e solicitação de link; falta tela de redefinição |
+| RF10 — agenda pessoal | concluído |
+| RF11 — avisos de alteração/cancelamento | concluído no back-end |
+| RF12 — preferências de alerta | concluído |
+| RF13 — compartilhar evento | concluído (clipboard) |
+| RF14 — denunciar conteúdo | concluído para evento e avaliação |
+
+A meta de 25% dos RFs essenciais da Sprint 1 (RF01a + RF03) foi superada;
+os 7 RFs essenciais já têm pelo menos o fluxo principal implementado. Ainda
+faltam integrações de produção: envio real de e-mail, upload de mídia,
+moderação administrativa e testes E2E.
 
 ## Estrutura
 
@@ -210,9 +240,10 @@ Verificação executada em 12/11/2026:
 - `http://localhost:5173`: wireframe com “Header aqui”, “Feed de eventos”, “Mapa de eventos” e “Footer aqui”.
 - Mapa: temas claro, escuro e temático funcionando; marcadores de exemplo para as 10 categorias (Bumba, Música/Reggae, Teatro, Gastronomia, Museus, Tambor de Crioula, Samba/Pagode, Orla/Praia, Feirinhas/Artesanato e Cinema/Audiovisual).
 - `prefers-reduced-motion: reduce`: animações dos marcadores desligadas.
-- Testes: 2 no back-end e 16 no front-end; build de produção gerado.
+- Testes: 10 no back-end e 29 no front-end; build de produção gerado.
 - Scripts `db-shell` e `db-backup` testados; script de inicialização executado em volume novo.
-- Banco: init, 4 migrações, seed, verificação estrutural, smoke tests, reset, backup/restore e perfis pgAdmin/PgBouncer/exporter/backup testados em volume novo.
+- Banco: init, 6 migrações, seed, verificação estrutural, smoke tests, reset, backup/restore e perfis pgAdmin/PgBouncer/exporter/backup testados em volume novo.
+- Perfil: central do usuário com dados, agenda, avaliações, eventos, notificações, denúncias e segurança; perfil persistido no `localStorage` do protótipo.
 
 ## Publicação
 

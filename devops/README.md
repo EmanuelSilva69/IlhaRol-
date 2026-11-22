@@ -118,6 +118,10 @@ docker compose -f devops/docker-compose.yml up -d --build web
 | `WEB_PORT` | `5173` | Porta da interface no host |
 | `CORS_ORIGINS` | `http://localhost:5173` | Origem autorizada |
 | `CARTO_API_KEY` | vazio | Chave dos Basemaps CARTO; fica só no `.env` local |
+| `VITE_API_URL` | `http://localhost:8000` | URL da API usada pelo front-end |
+| `JWT_SECRET` | `change-me-in-local-env` | Chave de assinatura dos tokens JWT |
+| `JWT_EXPIRE_MINUTES` | `1440` | Expiração do token em minutos |
+| `DEBUG` | `true` (Compose) | Expõe o token de recuperação na resposta local |
 | `DB_POOL_SIZE` | `10` | Conexões mantidas no pool da API |
 | `DB_MAX_OVERFLOW` | `20` | Conexões extras permitidas |
 | `DB_POOL_RECYCLE` | `1800` | Reciclagem de conexões (segundos) |

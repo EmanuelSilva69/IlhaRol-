@@ -4,9 +4,9 @@ Wireframe em React 19 + Vite + Tailwind CSS 4.
 
 ## Estado do protótipo
 
-A tela principal é um mockup preto e branco, com blocos de placeholder como “HEADER AQUI”, “Feed de eventos” e “possível local de informação”. Ela não representa o layout final.
+O front-end é um protótipo navegável com seis telas principais: feed/mapa, detalhes do evento, login/cadastro, minha agenda, área do organizador e perfil. Quando a API está disponível, feed, autenticação, perfil, favoritos, avaliações e denúncias são persistidos no PostgreSQL; se ela estiver indisponível, os dados mockados de `src/data/` mantêm o protótipo funcionando.
 
-O único componente funcional é o `EventMap`, que exibe o mapa de São Luís, os temas e os marcadores animados. O restante da interface deve ser evoluído pelas equipes de front-end.
+A tela de perfil funciona como uma central do usuário: dados pessoais, interesses culturais, preferências de alerta, agenda, avaliações, eventos publicados, denúncias e segurança. O perfil é persistido no `localStorage`; favoritos, avaliações e denúncias vivem em memória no protótipo.
 
 ## Executar
 
@@ -33,6 +33,44 @@ Acesse http://localhost:5173.
 | `npm run build` | Verificação TypeScript + build de produção em `dist/` |
 | `npm test` | Testes unitários com Vitest |
 | `npm run preview` | Pré-visualização do build de produção |
+
+## Telas e perfil
+
+O roteamento é feito por hash (`#/feed`, `#/evento/:id`, `#/login`, `#/minha-agenda`, `#/organizador`, `#/perfil`). O estado principal fica em `src/App.tsx`.
+
+A central de perfil (`src/pages/ProfilePage.tsx`) tem abas acessíveis com `role="tablist"`/`role="tab"`:
+
+- **Meus dados:** nome, e-mail somente leitura, bairro, bio e interesses culturais.
+- **Minha agenda:** favoritos em ordem cronológica.
+- **Avaliações:** reviews feitos pelo usuário em eventos realizados.
+- **Meus eventos:** publicações vinculadas ao `organizerId` do perfil.
+- **Notificações & alertas:** preferências e histórico de avisos.
+- **Denúncias:** registros enviados para moderação.
+- **Segurança:** sessão simulada, alteração de senha e resumo de privacidade.
+
+O perfil usa `src/data/mockUser.ts` como estado inicial e `localStorage` (`ilharole:profile`) para manter as edições entre recarregamentos. Em produção, essas operações devem passar pela API e pelo JWT.
+
+## Integração com a API
+
+O cliente HTTP fica em `src/lib/api.ts` e usa `VITE_API_URL` (padrão
+`http://localhost:8000`). Quando a API está disponível:
+
+- o feed é carregado de `GET /api/eventos`;
+- login e cadastro usam `/api/auth/login` e `/api/auth/register`;
+- o token JWT é persistido em `localStorage` (`ilharole:token`);
+- favoritos, avaliações, denúncias, perfil, preferências e notificações usam
+  as rotas `/api/me/*` e `/api/eventos/{id}/*`;
+- a área do organizador publica/cancela via API.
+
+Se a API estiver indisponível, o protótipo continua funcionando com os dados
+mockados de `src/data/`. Conta de demonstração:
+
+```text
+produtor@example.com / demo1234
+```
+
+O botão “Preencher conta demo” na tela de login facilita o teste. Depois do
+login, o feed recarrega com os favoritos reais do usuário.
 
 ## EventMap
 
@@ -120,7 +158,7 @@ O título e a categoria são escapados antes de entrar no HTML e expostos em `ar
 1. Crie o SVG em `src/assets/markers/` com classes prefixadas e o bloco de movimento reduzido.
 2. Adicione a categoria em `src/types/event.ts` (`EventCategory`).
 3. Importe o SVG com `?raw` em `src/lib/markers.ts` e registre-o em `CATEGORY_SVGS`, `CATEGORY_LABELS` e `MARKER_METRICS`.
-4. Inclua aliases em `CATEGORY_ALIASES` de `src/lib/map.ts` e um evento de exemplo em `src/App.tsx`.
+4. Inclua aliases em `CATEGORY_ALIASES` de `src/lib/map.ts` e um evento de exemplo em `src/data/mockEvents.ts`.
 5. Atualize os testes de `src/lib/markers.test.ts` e rode `npm test`.
 
 ## Estrutura
@@ -128,11 +166,13 @@ O título e a categoria são escapados antes de entrar no HTML e expostos em `ar
 ```text
 src/
 ├── assets/markers/   # SVGs animados por categoria
-├── components/       # EventMap e estilos
+├── components/       # EventMap, Navbar, Toast, RfBadge e Footer
+├── data/             # eventos, notificações e perfil mockados
 ├── lib/              # helpers puros (categorias, temas, marcadores)
+├── pages/            # Feed, Detalhes, Login, Agenda, Organizador e Perfil
 ├── test/             # configuração do Vitest
-├── types/            # tipos de evento
-├── App.tsx           # wireframe da tela principal
+├── types/            # tipos de evento, perfil e notificações
+├── App.tsx           # rotas por hash e estado principal
 ├── index.css
 └── main.tsx
 ```

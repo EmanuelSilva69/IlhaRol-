@@ -13,7 +13,9 @@ DECLARE
     expected_tables text[] := ARRAY[
         'app.users', 'app.categories', 'app.venues', 'app.events',
         'app.event_categories', 'app.favorites', 'app.reviews', 'app.notifications',
-        'app.schema_migrations', 'audit.log'
+        'app.schema_migrations', 'audit.log',
+        'app.user_interests', 'app.notification_preferences',
+        'app.reports', 'app.password_reset_tokens'
     ];
     expected_views text[] := ARRAY[
         'analytics.v_event_engagement', 'analytics.v_category_popularity',

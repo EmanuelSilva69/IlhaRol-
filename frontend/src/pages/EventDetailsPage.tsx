@@ -13,6 +13,14 @@ interface EventDetailsPageProps {
     rating: 1 | 2 | 3 | 4 | 5,
     comment: string,
   ) => void;
+  onReport: (input: {
+    eventId: string;
+    eventTitle: string;
+    targetType: "EVENTO" | "AVALIACAO";
+    reviewId?: string;
+    reason: string;
+    description: string;
+  }) => void;
 }
 
 export function EventDetailsPage({
@@ -20,6 +28,7 @@ export function EventDetailsPage({
   allEvents,
   onToggleFavorite,
   onAddReview,
+  onReport,
 }: EventDetailsPageProps) {
   const [rating, setRating] = useState<1 | 2 | 3 | 4 | 5>(5);
   const [comment, setComment] = useState("");
@@ -28,6 +37,7 @@ export function EventDetailsPage({
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState("INFORMACAO_FALSA");
   const [reportTarget, setReportTarget] = useState("EVENTO");
+  const [reportReviewId, setReportReviewId] = useState("");
   const [reportDescription, setReportDescription] = useState("");
   const [reportSubmitted, setReportSubmitted] = useState(false);
   const [simulateNotFound, setSimulateNotFound] = useState(false);
@@ -118,7 +128,20 @@ export function EventDetailsPage({
 
   const handleReportSubmit = (e: FormEvent) => {
     e.preventDefault();
+    onReport({
+      eventId: event.id,
+      eventTitle: event.title,
+      targetType: reportTarget as "EVENTO" | "AVALIACAO",
+      reviewId:
+        reportTarget === "AVALIACAO"
+          ? reportReviewId || event.reviews[0]?.id
+          : undefined,
+      reason: reportReason,
+      description: reportDescription.trim(),
+    });
     setReportSubmitted(true);
+    setReportDescription("");
+    setReportReviewId("");
   };
 
   return (
@@ -377,6 +400,37 @@ export function EventDetailsPage({
                   </select>
                 </div>
               </div>
+
+              {reportTarget === "AVALIACAO" && (
+                <div>
+                  <label
+                    htmlFor="report-review"
+                    className="block text-xs font-bold uppercase"
+                  >
+                    Comentário / Avaliação denunciada
+                  </label>
+                  {event.reviews.length === 0 ? (
+                    <p className="mt-1 border border-black bg-white p-2 text-[11px]">
+                      Este evento ainda não possui avaliações. Selecione
+                      “Publicação do Evento” ou avalie o evento primeiro.
+                    </p>
+                  ) : (
+                    <select
+                      id="report-review"
+                      value={reportReviewId || event.reviews[0]?.id}
+                      onChange={(e) => setReportReviewId(e.target.value)}
+                      className="mt-1 w-full border-2 border-black bg-white px-2.5 py-1.5 text-xs"
+                    >
+                      {event.reviews.map((review) => (
+                        <option key={review.id} value={review.id}>
+                          {review.author} · {review.rating}/5 ·{" "}
+                          {review.comment.slice(0, 60)}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
+              )}
 
               <div>
                 <label

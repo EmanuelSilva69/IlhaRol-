@@ -52,6 +52,10 @@ services:
       DB_CONNECT_TIMEOUT: ${DB_CONNECT_TIMEOUT:-5}
       DB_STATEMENT_CACHE_SIZE: ${DB_STATEMENT_CACHE_SIZE:-100}
       DB_APPLICATION_NAME: ${DB_APPLICATION_NAME:-ilharole-api}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-local-env}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES:-1440}
+      DEBUG: ${DEBUG:-true}
     ports:
       - "${API_PORT}:8000"
     volumes:
@@ -80,6 +84,7 @@ services:
     restart: unless-stopped
     environment:
       VITE_CARTO_API_KEY: ${CARTO_API_KEY}
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
     ports:
       - "${WEB_PORT}:5173"
     volumes:

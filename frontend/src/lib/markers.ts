@@ -112,7 +112,10 @@ export function createEventIcon(
   const dropStyle = animate ? ` style="animation-delay:${delay}ms"` : "";
 
   return L.divIcon({
-    html: `<div class="event-marker-inner${dropClass}"${dropStyle} role="img" aria-label="${safeLabel}" title="${safeLabel}">${markerSvgFor(event.category)}</div>`,
+    // A queda fica no wrapper e o giro no inner. Se as duas animações
+    // disputassem o mesmo elemento, voltar do hover reiniciaria a queda e o
+    // ícone desapareceria durante o animation-delay.
+    html: `<div class="event-marker-frame${dropClass}"${dropStyle}><div class="event-marker-inner" role="img" aria-label="${safeLabel}" title="${safeLabel}">${markerSvgFor(event.category)}</div></div>`,
     className: "event-marker",
     iconSize: [metrics.width, metrics.height],
     iconAnchor: metrics.anchor,

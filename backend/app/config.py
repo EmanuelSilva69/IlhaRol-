@@ -29,6 +29,11 @@ class Settings(BaseSettings):
     db_statement_cache_size: int = 100
     db_application_name: str = "ilharole-api"
 
+    jwt_secret: str = "change-me-in-local-env"
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = 1440
+    debug: bool = False
+
     @property
     def sqlalchemy_database_url(self) -> str:
         if self.database_url:
