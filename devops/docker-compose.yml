@@ -5,13 +5,25 @@ services:
     image: postgres:16-alpine
     container_name: ilharole-db
     restart: unless-stopped
+    shm_size: 256mb
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      ILHAROLE_APP_USER: ${ILHAROLE_APP_USER:-ilharole_app}
+      ILHAROLE_APP_PASSWORD: ${ILHAROLE_APP_PASSWORD:-change-me-app}
+      ILHAROLE_READONLY_USER: ${ILHAROLE_READONLY_USER:-ilharole_readonly}
+      ILHAROLE_READONLY_PASSWORD: ${ILHAROLE_READONLY_PASSWORD:-change-me-readonly}
+      TZ: ${TZ:-America/Fortaleza}
     volumes:
       - ilharole_pgdata:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d:ro
+      - ./db:/opt/ilharole-db:ro
+      - ./db/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    ports:
+      # Acesso local (DBeaver/psql). Fica restrito ao loopback do host.
+      - "127.0.0.1:${POSTGRES_EXPOSE_PORT:-5432}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -34,6 +46,12 @@ services:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_PORT: ${POSTGRES_PORT}
       CORS_ORIGINS: ${CORS_ORIGINS}
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-10}
+      DB_MAX_OVERFLOW: ${DB_MAX_OVERFLOW:-20}
+      DB_POOL_RECYCLE: ${DB_POOL_RECYCLE:-1800}
+      DB_CONNECT_TIMEOUT: ${DB_CONNECT_TIMEOUT:-5}
+      DB_STATEMENT_CACHE_SIZE: ${DB_STATEMENT_CACHE_SIZE:-100}
+      DB_APPLICATION_NAME: ${DB_APPLICATION_NAME:-ilharole-api}
     ports:
       - "${API_PORT}:8000"
     volumes:
@@ -79,8 +97,102 @@ services:
     networks:
       - ilharole
 
+  # Perfil "tools": administração visual do banco.
+  # docker compose -f devops/docker-compose.yml --profile tools up -d pgadmin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ilharole-pgadmin
+    restart: unless-stopped
+    profiles: ["tools"]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@ilharole.dev}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-change-me-pgadmin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      TZ: ${TZ:-America/Fortaleza}
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - ilharole_pgadmin:/var/lib/pgadmin
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ilharole
+
+  # Perfil "pool": pooler de conexões para clientes externos.
+  # O modo session é o padrão para não quebrar prepared statements do asyncpg.
+  pgbouncer:
+    image: edoburu/pgbouncer:v1.26.0-p0
+    container_name: ilharole-pgbouncer
+    restart: unless-stopped
+    profiles: ["pool"]
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: ${POSTGRES_DB}
+      AUTH_TYPE: scram-sha-256
+      POOL_MODE: ${PGBOUNCER_POOL_MODE:-session}
+      MAX_CLIENT_CONN: ${PGBOUNCER_MAX_CLIENT_CONN:-100}
+      DEFAULT_POOL_SIZE: ${PGBOUNCER_DEFAULT_POOL_SIZE:-20}
+    ports:
+      - "${PGBOUNCER_PORT:-6432}:5432"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ilharole
+
+  # Perfil "observability": métricas no formato Prometheus.
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.17.1
+    container_name: ilharole-postgres-exporter
+    restart: unless-stopped
+    profiles: ["observability"]
+    environment:
+      DATA_SOURCE_URI: "db:5432/${POSTGRES_DB}?sslmode=disable"
+      DATA_SOURCE_USER: ${ILHAROLE_READONLY_USER:-ilharole_readonly}
+      DATA_SOURCE_PASS: ${ILHAROLE_READONLY_PASSWORD:-change-me-readonly}
+      PG_EXPORTER_AUTO_DISCOVER_DATABASES: "false"
+    ports:
+      - "${POSTGRES_EXPORTER_PORT:-9187}:9187"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ilharole
+
+  # Perfil "backup": dump automático com retenção em volume Docker.
+  backup:
+    image: prodrigestivill/postgres-backup-local:16-alpine
+    container_name: ilharole-backup
+    restart: unless-stopped
+    profiles: ["backup"]
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SCHEDULE: ${BACKUP_SCHEDULE:-@daily}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-7}
+      BACKUP_KEEP_WEEKS: ${BACKUP_KEEP_WEEKS:-4}
+      BACKUP_KEEP_MONTHS: ${BACKUP_KEEP_MONTHS:-6}
+      HEALTHCHECK_PORT: 8080
+      TZ: ${TZ:-America/Fortaleza}
+    volumes:
+      - ilharole_backups:/backups
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ilharole
+
 volumes:
   ilharole_pgdata:
+  ilharole_pgadmin:
+  ilharole_backups:
 
 networks:
   ilharole:

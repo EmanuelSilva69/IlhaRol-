@@ -1,0 +1,16 @@
+# Normaliza finais de linha para evitar quebra de scripts no Docker/Linux.
+* text=auto
+
+# Scripts de shell e SQL rodam dentro do Linux (contêiner) e precisam de LF.
+*.sh text eol=lf
+*.sql text eol=lf
+*.conf text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+Dockerfile text eol=lf
+Dockerfile.* text eol=lf
+*.Dockerfile text eol=lf
+
+# Scripts PowerShell seguem o padrão Windows.
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf

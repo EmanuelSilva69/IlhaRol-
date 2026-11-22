@@ -29,3 +29,5 @@ Thumbs.db
 
 # Backups locais do banco
 ilharole-backup.sql
+*.dump
+*.sql.gz

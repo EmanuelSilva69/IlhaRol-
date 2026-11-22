@@ -86,7 +86,7 @@ Serviços esperados:
 | `web` | http://localhost:5173 | Wireframe React/Vite |
 | `api` | http://localhost:8000 | API FastAPI |
 | `api` (docs) | http://localhost:8000/docs | Documentação OpenAPI |
-| `db` | rede interna `ilharole` | PostgreSQL, sem porta publicada no host |
+| `db` | `localhost:5432` (loopback) | PostgreSQL 16; porta configurável em `POSTGRES_EXPOSE_PORT` |
 
 Para acompanhar os logs:
 
@@ -161,17 +161,40 @@ docker compose -f devops/docker-compose.yml run --rm web npm test
 
 ## Banco de dados
 
-O serviço `db` usa o volume `ilharole_pgdata` e executa os scripts de `devops/db/init/` apenas na primeira criação do volume. Consulte [`devops/db/README.md`](devops/db/README.md) para conexão, reset, backup e restauração.
+O serviço `db` usa o volume `ilharole_pgdata`, uma configuração própria em
+`devops/db/postgresql.conf` e executa os scripts de `devops/db/init/` apenas na
+primeira criação do volume. O schema evolui por migrações versionadas em
+`devops/db/migrations/`, com checksum e histórico em `app.schema_migrations`.
 
 ```powershell
 .\devops\scripts\db-shell.ps1
+.\devops\scripts\db-migrate.ps1
+.\devops\scripts\db-roles.ps1
+.\devops\scripts\db-seed.ps1
+.\devops\scripts\db-check.ps1
+.\devops\scripts\db-test.ps1
+.\devops\scripts\db-stats.ps1
 .\devops\scripts\db-backup.ps1
+.\devops\scripts\db-restore.ps1
 ```
 
 ```bash
 ./devops/scripts/db-shell.sh
+./devops/scripts/db-migrate.sh
+./devops/scripts/db-roles.sh
+./devops/scripts/db-seed.sh
+./devops/scripts/db-check.sh
+./devops/scripts/db-test.sh
+./devops/scripts/db-stats.sh
 ./devops/scripts/db-backup.sh
+./devops/scripts/db-restore.sh
 ```
+
+Além do schema de domínio, há busca full-text em português, similaridade por
+trigramas, busca por proximidade geográfica, auditoria, views de analytics e
+perfis opcionais de pgAdmin, PgBouncer, backup automático e métricas. Consulte
+[`devops/db/README.md`](devops/db/README.md) e
+[`devops/db/FEATURES.md`](devops/db/FEATURES.md).
 
 ## DevOps
 
@@ -189,6 +212,7 @@ Verificação executada em 12/11/2026:
 - `prefers-reduced-motion: reduce`: animações dos marcadores desligadas.
 - Testes: 2 no back-end e 16 no front-end; build de produção gerado.
 - Scripts `db-shell` e `db-backup` testados; script de inicialização executado em volume novo.
+- Banco: init, 4 migrações, seed, verificação estrutural, smoke tests, reset, backup/restore e perfis pgAdmin/PgBouncer/exporter/backup testados em volume novo.
 
 ## Publicação
 

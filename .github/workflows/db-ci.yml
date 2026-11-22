@@ -1,0 +1,84 @@
+name: DB CI
+
+on:
+  push:
+    paths:
+      - "devops/db/**"
+      - "devops/scripts/**"
+      - ".github/workflows/db-ci.yml"
+  pull_request:
+    paths:
+      - "devops/db/**"
+      - "devops/scripts/**"
+      - ".github/workflows/db-ci.yml"
+  workflow_dispatch:
+
+jobs:
+  database:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: ilharole
+          POSTGRES_USER: ilharole
+          POSTGRES_PASSWORD: ilharole
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ilharole -d ilharole"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGDATABASE: ilharole
+      PGUSER: ilharole
+      PGPASSWORD: ilharole
+      POSTGRES_DB: ilharole
+      POSTGRES_USER: ilharole
+      POSTGRES_PASSWORD: ilharole
+      ILHAROLE_APP_USER: ilharole_app
+      ILHAROLE_APP_PASSWORD: ilharole_app_ci
+      ILHAROLE_READONLY_USER: ilharole_readonly
+      ILHAROLE_READONLY_PASSWORD: ilharole_readonly_ci
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cliente PostgreSQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Extensões, schemas e papéis
+        run: |
+          psql -v ON_ERROR_STOP=1 -f devops/db/init/01-init.sql
+          bash devops/db/init/02-roles.sh
+
+      - name: Migrações
+        run: |
+          for file in devops/db/migrations/*.sql; do
+            version="$(basename "$file" .sql)"
+            checksum="$(sha256sum "$file" | awk '{print $1}')"
+            psql -v ON_ERROR_STOP=1 --single-transaction \
+              -f "$file" \
+              -c "INSERT INTO app.schema_migrations (version, checksum)
+                  VALUES ('$version', '$checksum')
+                  ON CONFLICT (version) DO UPDATE SET checksum = EXCLUDED.checksum;"
+          done
+
+      - name: Seed
+        run: |
+          psql -v ON_ERROR_STOP=1 --single-transaction -f devops/db/seeds/0001_demo.sql
+          psql -v ON_ERROR_STOP=1 -c "SELECT analytics.refresh_daily_event_stats();"
+
+      - name: Verificação estrutural
+        run: psql -v ON_ERROR_STOP=1 -f devops/db/diagnostics/check.sql
+
+      - name: Smoke tests
+        run: psql -v ON_ERROR_STOP=1 -f devops/db/diagnostics/smoke.sql

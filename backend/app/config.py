@@ -22,6 +22,13 @@ class Settings(BaseSettings):
     database_url: str | None = None
     cors_origins: str = "http://localhost:5173"
 
+    db_pool_size: int = 10
+    db_max_overflow: int = 20
+    db_pool_recycle: int = 1800
+    db_connect_timeout: int = 5
+    db_statement_cache_size: int = 100
+    db_application_name: str = "ilharole-api"
+
     @property
     def sqlalchemy_database_url(self) -> str:
         if self.database_url:

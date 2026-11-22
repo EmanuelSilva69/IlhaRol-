@@ -41,6 +41,19 @@ curl http://localhost:8000/health
 
 O código é montado como volume; alterações em `backend/` são recarregadas pelo Uvicorn.
 
+## Pool de conexões
+
+A API lê o pool de `devops/.env` (ou do ambiente):
+
+| Variável | Padrão | Uso |
+| --- | --- | --- |
+| `DB_POOL_SIZE` | `10` | Conexões mantidas no pool |
+| `DB_MAX_OVERFLOW` | `20` | Conexões extras permitidas |
+| `DB_POOL_RECYCLE` | `1800` | Reciclagem de conexões (segundos) |
+| `DB_CONNECT_TIMEOUT` | `5` | Timeout de conexão (segundos) |
+| `DB_STATEMENT_CACHE_SIZE` | `100` | Cache de prepared statements do asyncpg; use `0` com PgBouncer em `pool_mode=transaction` |
+| `DB_APPLICATION_NAME` | `ilharole-api` | Nome visível em `pg_stat_activity` |
+
 ## Testes
 
 ```bash
