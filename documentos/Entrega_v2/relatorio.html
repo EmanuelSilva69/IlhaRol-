@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>IlhaRolê — Relatório de Entrega v2</title>
+<style>
+  @page { size: A4; margin: 14mm 13mm 16mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    color: #111;
+    background: #fff;
+    font-size: 10.5pt;
+    line-height: 1.45;
+  }
+  h1, h2, h3, h4 { margin: 0; line-height: 1.2; }
+  h1 { font-size: 30pt; text-transform: uppercase; letter-spacing: -0.02em; }
+  h2 {
+    font-size: 15pt;
+    text-transform: uppercase;
+    border-top: 3px solid #111;
+    border-bottom: 3px solid #111;
+    padding: 7px 0;
+    margin: 22px 0 12px;
+  }
+  h3 { font-size: 11.5pt; text-transform: uppercase; margin: 16px 0 6px; }
+  h4 { font-size: 10.5pt; text-transform: uppercase; margin: 12px 0 4px; }
+  p { margin: 5px 0; }
+  ul, ol { margin: 5px 0 8px 18px; padding: 0; }
+  li { margin: 2px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: 9.3pt; }
+  th, td { border: 1px solid #111; padding: 5px 6px; vertical-align: top; text-align: left; }
+  th { background: #111; color: #fff; text-transform: uppercase; font-size: 8.5pt; letter-spacing: 0.03em; }
+  tr:nth-child(even) td { background: #f7f7f7; }
+  .cover {
+    min-height: 260mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 4px solid #111;
+    padding: 16mm 13mm;
+    page-break-after: always;
+  }
+  .cover .tag {
+    display: inline-block;
+    background: #111;
+    color: #fff;
+    padding: 4px 8px;
+    font-size: 9pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .cover h1 { margin-top: 18mm; font-size: 38pt; }
+  .cover .subtitle { font-size: 16pt; font-weight: 700; margin-top: 6px; }
+  .cover .accent { margin-top: 10mm; height: 8mm; background: #fcd34d; border: 2px solid #111; }
+  .cover .meta { font-size: 9.5pt; margin-top: 12mm; }
+  .cover .meta strong { display: inline-block; min-width: 32mm; }
+  .team { margin-top: 8mm; columns: 2; column-gap: 12mm; font-size: 9.5pt; }
+  .team div { break-inside: avoid; padding: 3px 0; border-bottom: 1px solid #bbb; }
+  .repo { margin-top: 10mm; border: 2px solid #111; padding: 5mm; font-size: 9.5pt; background: #f7f7f7; }
+  .note { border-left: 5px solid #111; background: #f5f5f5; padding: 8px 10px; margin: 10px 0; }
+  .good { border-left-color: #15803d; background: #ecfdf5; }
+  .warn { border-left-color: #b45309; background: #fffbeb; }
+  .shot {
+    page-break-inside: avoid;
+    border: 2px solid #111;
+    margin: 12px 0 16px;
+    background: #fff;
+  }
+  .shot img { display: block; width: 100%; height: auto; border-bottom: 2px solid #111; }
+  .shot .cap { padding: 6px 8px; font-size: 8.8pt; }
+  .shot .cap strong { text-transform: uppercase; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .pill {
+    display: inline-block;
+    border: 1px solid #111;
+    padding: 1px 5px;
+    font-size: 8pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-right: 4px;
+    background: #dcfce7;
+  }
+  .pill.rnf { background: #e0f2fe; }
+  .pill.us { background: #f3e8ff; }
+  .small { font-size: 8.8pt; color: #444; }
+  .kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0 12px; }
+  .kpi div { border: 1px solid #111; padding: 6px; text-align: center; background: #fafafa; }
+  .kpi b { display: block; font-size: 17pt; }
+  .kpi span { font-size: 8pt; text-transform: uppercase; font-weight: 800; }
+  .sprint-page { page-break-before: always; page-break-after: always; }
+  .checklist { list-style: none; margin-left: 0; }
+  .checklist li { border-bottom: 1px solid #ddd; padding: 5px 0; }
+  .checklist li::before { content: "✓"; display: inline-block; width: 5mm; font-weight: 900; }
+  code { background: #f0f0f0; padding: 1px 4px; border: 1px solid #ddd; font-size: 9pt; }
+  .footer-note { margin-top: 18px; border-top: 1px solid #111; padding-top: 6px; font-size: 8.3pt; color: #555; }
+  .page-break { page-break-before: always; }
+
+  .toc { border: 2px solid #111; padding: 10px 14px; margin: 10px 0 18px; background: #fafafa; }
+  .toc ol { columns: 2; column-gap: 14mm; margin-left: 18px; }
+  .toc li { margin: 3px 0; font-size: 9.5pt; }
+  .lead { font-size: 11.5pt; line-height: 1.55; }
+  .muted-box { border: 1px solid #111; background: #f7f7f7; padding: 8px 10px; margin: 10px 0; }
+  .compare td:first-child { width: 20%; font-weight: 800; text-transform: uppercase; }
+  .compare td:nth-child(2) { width: 38%; }
+  .timeline { margin: 8px 0 12px 0; }
+  .timeline div { border-left: 4px solid #111; padding: 2px 0 8px 10px; margin-left: 4px; }
+  .timeline b { display: block; text-transform: uppercase; font-size: 9pt; }
+  .quote { border-left: 5px solid #111; padding: 6px 10px; background: #fafafa; font-style: italic; margin: 10px 0; }
+  .features h3 { border-bottom: 1px solid #111; padding-bottom: 3px; }
+  .features p { margin: 6px 0; }
+  .checklist li::before { content: "✓"; }
+  .pending li::before { content: "→"; }
+  .pending { list-style: none; margin-left: 0; }
+  .pending li { border-bottom: 1px solid #ddd; padding: 5px 0; }
+  .pending li::before { display: inline-block; width: 5mm; font-weight: 900; }
+
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div>
+    <span class="tag">Entrega v2 · Relatório técnico</span>
+    <h1>IlhaRolê</h1>
+    <p class="subtitle">Agenda cultural colaborativa de São Luís — protótipo navegável + API + PostgreSQL · relatório ampliado</p>
+    <div class="accent"></div>
+  </div>
+
+  <div>
+    <div class="meta">
+      <p><strong>Versão:</strong> v2 · 22/11/2026</p>
+      <p><strong>Equipe:</strong> IlhaRolê</p>
+      <p><strong>Repositório:</strong> https://github.com/EmanuelSilva69/IlhaRol-.git</p>
+      <p><strong>Entrega:</strong> relatório.pdf, codigo/ e repositorio.txt</p>
+    </div>
+
+    <h3>Integrantes</h3>
+    <div class="team">
+      <div>Emanuel Lopes Silva</div>
+      <div>José Nunes de Sousa Neto</div>
+      <div>Josuel Pinheiro Barros Junior</div>
+      <div>Leonidas Ferreira da Silva Serra</div>
+      <div>Marcos Vinicius Jansem Oliveira</div>
+      <div>Thales Aymar Fortes de Souza</div>
+    </div>
+
+    <div class="repo">
+      <strong>Repositório público:</strong><br />
+      https://github.com/EmanuelSilva69/IlhaRol-.git<br />
+      <span class="small">O arquivo <code>repositorio.txt</code> acompanha o pacote com o mesmo link.</span>
+    </div>
+  </div>
+</section>
+
+<nav class="toc">
+  <h2 style="border:0;padding:0;margin:0 0 8px;">Sumário</h2>
+  <ol>
+    <li>Resumo executivo</li>
+    <li>Contexto, problema e proposta</li>
+    <li>O que mudou da v1 para a v2</li>
+    <li>Sprint 1: planejado x entregue</li>
+    <li>Arquitetura e tecnologias</li>
+    <li>Banco de dados e migrações</li>
+    <li>Funcionalidades novas em detalhe</li>
+    <li>Telas e estados</li>
+    <li>Relatório de Sprint 1 (1 página)</li>
+    <li>Critérios de entrega e checklist</li>
+    <li>Como executar a entrega</li>
+    <li>Limitações e próximos passos</li>
+    <li>Anexo A — conteúdo do pacote</li>
+  </ol>
+</nav>
+<div class="page-break"></div>
+
+<h2>1. Resumo executivo</h2>
+<p>
+  O IlhaRolê centraliza a agenda cultural de São Luís em um feed com busca,
+  filtros por bairro e categoria, mapa interativo, agenda pessoal, avaliações,
+  alertas e denúncias. A v2 avança do wireframe para uma aplicação com
+  persistência real em PostgreSQL: autenticação JWT, senhas Argon2, perfil,
+  eventos, favoritos, avaliações, notificações e denúncias passam pela API.
+</p>
+<p>
+  O front-end continua funcionando como protótipo navegável e mantém fallback
+  mockado caso a API esteja indisponível. No ambiente de demonstração, a API e
+  o banco estão ativos e as capturas deste relatório foram geradas com dados
+  reais do PostgreSQL.
+</p>
+
+<div class="kpi">
+  <div><b>6</b><span>migrações SQL</span></div>
+  <div><b>10</b><span>testes back-end</span></div>
+  <div><b>29</b><span>testes front-end</span></div>
+  <div><b>7/7</b><span>RF essenciais cobertos</span></div>
+</div>
+
+
+<h2>2. Contexto, problema e proposta</h2>
+<p class="lead">
+  São Luís tem uma vida cultural intensa, distribuída entre o Centro Histórico,
+  a orla, a Lagoa da Jansen, a Madre Deus e dezenas de espaços independentes.
+  A divulgação, porém, acontece de forma fragmentada: cada produtor publica em
+  seus próprios perfis, grupos de mensagens e cartazes digitais. O morador e o
+  turista precisam garimpar vários canais para descobrir o que acontece no fim
+  de semana; o produtor, por sua vez, depende de alcance orgânico e de uma base
+  fixa de seguidores.
+</p>
+<p>
+  O IlhaRolê nasce para resolver esse desencontro. A proposta é centralizar a
+  agenda cultural em um feed único, pesquisável e filtrável por bairro e
+  categoria, com mapa interativo, agenda pessoal, avaliações e alertas. A
+  plataforma não vende ingressos e não substitui o produtor: ela organiza a
+  descoberta e direciona o público para a atração.
+</p>
+<p>
+  A v2 materializa a proposta em uma aplicação full-stack. O front-end React
+  conversa com uma API FastAPI; a API persiste usuários, eventos, favoritos,
+  avaliações, notificações e denúncias no PostgreSQL. O protótipo mantém a
+  linguagem visual de wireframe preto e branco, mas o comportamento deixou de
+  ser apenas simulado.
+</p>
+<div class="two">
+  <div class="muted-box">
+    <h4>Persona 1 — Marina, espectadora</h4>
+    <p>Quer descobrir lazer acessível perto de casa, no fim de semana, sem
+    depender de stories voláteis. Precisa de busca rápida, filtros por bairro e
+    uma agenda pessoal que não perca a data.</p>
+  </div>
+  <div class="muted-box">
+    <h4>Persona 2 — Carlos, produtor</h4>
+    <p>Quer divulgar datas, locais e horários para quem já procura cultura local.
+    Precisa publicar, acompanhar e cancelar eventos, além de avisar quem
+    favoritou a atração quando algo mudar.</p>
+  </div>
+</div>
+<div class="muted-box">
+  <h4>Persona 3 — Lucas, turista</h4>
+  <p>Chegou à cidade sem conhecer os polos culturais. Precisa de um mapa com
+  localização clara, endereço legível e informações de horário para planejar o
+  deslocamento.</p>
+</div>
+
+<h2>3. O que mudou da v1 para a v2</h2>
+<p>
+  A v1 entregou um protótipo navegável de seis telas, com dados mockados em
+  <code>src/data/</code>. Ela foi importante para validar fluxo, hierarquia
+  visual e requisitos, mas não provava persistência, autenticação real nem
+  integração com banco. A v2 preserva a identidade visual e a navegação, e
+  substitui a simulação por uma implementação com API e PostgreSQL.
+</p>
+<table class="compare">
+  <thead><tr><th>Dimensão</th><th>v1</th><th>v2</th></tr></thead>
+  <tbody>
+    <tr><td>Back-end</td><td>Apenas rota raiz e <code>/health</code>; sem endpoints de negócio.</td><td>API com autenticação, perfil, eventos, favoritos, avaliações, notificações e denúncias.</td></tr>
+    <tr><td>Dados</td><td>Mocks em memória; recarregar a página restaurava o estado inicial.</td><td>PostgreSQL com migrações, seed e persistência real para as operações suportadas.</td></tr>
+    <tr><td>Login</td><td>Simulação local; não havia token nem validação de senha.</td><td>Cadastro/login com Argon2 e JWT; token persistido no navegador.</td></tr>
+    <tr><td>Perfil</td><td>Tela única com dados locais e notificações mockadas.</td><td>Central com sete abas e edição persistida via <code>PATCH /api/me/perfil</code>.</td></tr>
+    <tr><td>Eventos</td><td>Feed e detalhes sobre arrays mockados.</td><td>Feed e detalhes carregados de <code>/api/eventos</code>, com fallback local.</td></tr>
+    <tr><td>Favoritos</td><td>Alteração apenas no estado React.</td><td>POST/DELETE na API e agenda por usuário autenticado.</td></tr>
+    <tr><td>Avaliações</td><td>Formulário local com regra de tela.</td><td>API bloqueia evento futuro/cancelado e duplicidade; reviews persistem.</td></tr>
+    <tr><td>Notificações</td><td>Lista mockada; sem geração automática.</td><td>Geração para novos eventos compatíveis, alterações e cancelamentos.</td></tr>
+    <tr><td>Denúncias</td><td>Modal visual sem persistência.</td><td>Denúncia de evento ou avaliação gravada com status de moderação.</td></tr>
+    <tr><td>Infra</td><td>Compose básico com db, api e web.</td><td>Compose com tuning, papéis, pgAdmin, PgBouncer, backup, exporter e CI.</td></tr>
+    <tr><td>Qualidade</td><td>2 testes de back-end e 16 de front-end.</td><td>10 testes de back-end e 29 de front-end; build e E2E validados.</td></tr>
+    <tr><td>Entrega</td><td>12 capturas; relatório focado no mockup.</td><td>18 capturas; relatório com arquitetura, banco, API e sprint.</td></tr>
+  </tbody>
+</table>
+<h3>O que permaneceu</h3>
+<ul>
+  <li>A linguagem visual de wireframe preto e branco, com bordas fortes e tipografia uppercase.</li>
+  <li>As seis telas principais e a navegação por hash.</li>
+  <li>O mapa Leaflet, os marcadores animados e os temas claro/escuro/temático.</li>
+  <li>A leitura dos RFs no cabeçalho de cada tela e a preocupação com acessibilidade.</li>
+</ul>
+<h3>O que foi realmente novo</h3>
+<ul>
+  <li>Camada de API com JWT, Argon2, validação e serialização REST.</li>
+  <li>Banco PostgreSQL com migrações versionadas, checagem de integridade e seed.</li>
+  <li>Central de perfil com agenda, avaliações, eventos, alertas, denúncias e segurança.</li>
+  <li>Geração de notificações para novos eventos e alterações/cancelamentos.</li>
+  <li>Seleção de avaliação no formulário de denúncia e persistência do status.</li>
+  <li>Alteração de senha real e proteção contra tela branca via Error Boundary.</li>
+  <li>Scripts de operação do banco, diagnósticos, smoke tests e CI.</li>
+</ul>
+<div class="note good">
+  <strong>Em uma frase:</strong> a v1 mostrava o produto; a v2 prova que o
+  produto funciona com dados reais, autenticação e banco.
+</div>
+
+<h2>4. Sprint 1: planejado x entregue</h2>
+<p>
+  O plano original da Sprint 1 pedia 25% dos requisitos essenciais funcionando,
+  com foco em <strong>RF01a (autenticação)</strong> e <strong>RF03 (feed com
+  busca e filtros)</strong>, além da modelagem do banco e do setup do ambiente.
+  A entrega cumpriu o plano e avançou além dele.
+</p>
+<table>
+  <thead><tr><th>Item planejado na S1</th><th>Como foi entregue</th><th>Evidência</th></tr></thead>
+  <tbody>
+    <tr><td>Setup do repositório e Docker</td><td>Compose com db, api e web; Dockerfiles; perfis opcionais; scripts de operação.</td><td>Capítulo 5 e <code>devops/</code></td></tr>
+    <tr><td>Modelagem do banco</td><td>Seis migrações, schemas app/audit/analytics, papéis e seed.</td><td>Capítulo 6 e <code>db/migrations/</code></td></tr>
+    <tr><td>RF01a — autenticação</td><td>Cadastro, login, JWT, Argon2, recuperação e alteração de senha.</td><td>Captura 01 e testes de segurança</td></tr>
+    <tr><td>RF03 — feed e filtros</td><td>Feed carregado da API, busca textual e filtros por bairro, categoria e período.</td><td>Capturas 02, 03 e 03b</td></tr>
+  </tbody>
+</table>
+<p>
+  Além dos dois RFs essenciais da sprint, a equipe entregou fluxos de perfil,
+  publicação de eventos, detalhes com mapa, favoritos, agenda, avaliações,
+  notificações e denúncias. Em termos de RFs essenciais, os sete possuem o fluxo
+  principal implementado; dois deles têm pendências de interface (RF07 e RF09),
+  explicitadas no capítulo 12.
+</p>
+<h3>4.1 Meta de 25% e progresso</h3>
+
+<p>
+  A Sprint 1 previa 25% dos requisitos essenciais funcionando, com foco em
+  <strong>RF01a (autenticação)</strong> e <strong>RF03 (feed com busca e filtros)</strong>.
+  A entrega supera essa meta: os dois RFs da sprint estão implementados e os
+  sete RFs essenciais já possuem o fluxo principal no código.
+</p>
+
+<table>
+  <thead><tr><th>RF</th><th>Descrição</th><th>Situação na v2</th></tr></thead>
+  <tbody>
+    <tr><td>RF01a</td><td>Cadastro, login e sessão JWT</td><td>Concluído: API + tela de login/cadastro</td></tr>
+    <tr><td>RF01b</td><td>Perfil, bairro, bio e interesses</td><td>Concluído: edição persistida no PostgreSQL</td></tr>
+    <tr><td>RF02</td><td>Publicar evento</td><td>Concluído: API + área do organizador</td></tr>
+    <tr><td>RF03</td><td>Feed com busca e filtros simultâneos</td><td>Concluído: front-end + consulta na API</td></tr>
+    <tr><td>RF04</td><td>Detalhes com mapa Leaflet</td><td>Concluído: dados do banco + mapa</td></tr>
+    <tr><td>RF05</td><td>Favoritos / “Tenho interesse”</td><td>Concluído: POST/DELETE na API</td></tr>
+    <tr><td>RF06</td><td>Avaliações pós-evento</td><td>Concluído: bloqueio de evento futuro/cancelado e duplicidade</td></tr>
+    <tr><td>RF07</td><td>Gerenciar eventos próprios</td><td>Parcial: cancelamento via API; edição de campos ainda simulada na UI</td></tr>
+    <tr><td>RF08</td><td>Alertas de novos eventos compatíveis</td><td>Concluído no back-end: categoria, bairro e preferências</td></tr>
+    <tr><td>RF09</td><td>Recuperação de acesso</td><td>Parcial: API e solicitação de link; falta tela de redefinição</td></tr>
+    <tr><td>RF10</td><td>Agenda pessoal cronológica</td><td>Concluído</td></tr>
+    <tr><td>RF11</td><td>Avisos de alteração/cancelamento</td><td>Concluído no back-end: notificação aos favoritos</td></tr>
+    <tr><td>RF12</td><td>Preferências de alerta</td><td>Concluído: flags persistidas e respeitadas pela API</td></tr>
+    <tr><td>RF13</td><td>Compartilhar evento</td><td>Concluído: link canônico + clipboard</td></tr>
+    <tr><td>RF14</td><td>Denunciar evento ou avaliação</td><td>Concluído: seleção de alvo e registro na moderação</td></tr>
+  </tbody>
+</table>
+
+<div class="note good">
+  <strong>Conclusão da meta:</strong> a Sprint 1 (25%) foi superada.
+  O pacote entregue contém o código que executa autenticação, feed, perfil,
+  favoritos, avaliações, notificações e denúncias sobre PostgreSQL.
+</div>
+<h3>4.2 O que foi entregue além do plano</h3>
+<table>
+  <thead><tr><th>Fluxo</th><th>Entrega real</th><th>RFs</th></tr></thead>
+  <tbody>
+    <tr><td>Perfil</td><td>Dados, bairro, bio, interesses e preferências persistidos.</td><td>RF01b / RF12</td></tr>
+    <tr><td>Eventos</td><td>Publicação pelo organizador e leitura no feed/detalhes.</td><td>RF02 / RF04</td></tr>
+    <tr><td>Agenda</td><td>Favoritos por usuário e lista cronológica.</td><td>RF05 / RF10</td></tr>
+    <tr><td>Avaliações</td><td>Nota e comentário apenas em evento realizado; duplicidade bloqueada.</td><td>RF06</td></tr>
+    <tr><td>Alertas</td><td>Novos eventos compatíveis, alterações e cancelamentos.</td><td>RF08 / RF11 / RF12</td></tr>
+    <tr><td>Denúncias</td><td>Evento ou avaliação com motivo e status de moderação.</td><td>RF14</td></tr>
+    <tr><td>Compartilhamento</td><td>Link canônico copiado para a área de transferência.</td><td>RF13</td></tr>
+  </tbody>
+</table>
+<div class="note">
+  <strong>Leitura da meta:</strong> 25% de sete RFs essenciais equivale a dois
+  RFs completos. A v2 entregou os dois planejados e mais cinco com fluxo
+  principal, chegando a 7/7. O critério não foi cumprido apenas na interface:
+  há API, banco e testes por trás dos fluxos.
+</div>
+
+
+<h2>5. Arquitetura e tecnologias</h2>
+<p>
+  A aplicação segue uma separação SPA + API REST. O navegador executa o bundle
+  React; qualquer operação de leitura ou escrita passa por <code>/api/*</code>
+  quando há API disponível. A API concentra autenticação, regras de negócio,
+  validação e acesso ao PostgreSQL. O banco é a fonte de verdade para usuários,
+  eventos, favoritos, avaliações, notificações, denúncias e preferências.
+</p>
+<div class="timeline">
+  <div><b>1. Navegador</b>React monta a tela, lê o token em <code>localStorage</code> e chama a API com <code>fetch</code>.</div>
+  <div><b>2. FastAPI</b>Valida o payload, verifica o JWT e aplica as regras do domínio.</div>
+  <div><b>3. SQLAlchemy</b>Traduz a operação em SQL assíncrono com <code>asyncpg</code>.</div>
+  <div><b>4. PostgreSQL</b>Garante FKs, unique constraints, checks e transações ACID.</div>
+  <div><b>5. Resposta</b>A API serializa o resultado e o React atualiza o estado da tela.</div>
+</div>
+<p>
+  O front-end mantém fallback mockado para que a demonstração continue mesmo sem
+  API. O token e o perfil ficam no <code>localStorage</code>; ao recarregar, o
+  app tenta revalidar a sessão em <code>GET /api/auth/me</code>. Se o token
+  estiver expirado, ele é descartado e a interface volta ao modo visitante.
+</p>
+<table>
+  <thead><tr><th>Camada</th><th>Tecnologia</th><th>Responsabilidade</th></tr></thead>
+  <tbody>
+    <tr><td>Front-end</td><td>React 19, Vite, Tailwind CSS 4, Leaflet</td><td>SPA por hash, feed, mapa, perfil, agenda e área do organizador</td></tr>
+    <tr><td>API</td><td>Python 3.12, FastAPI, SQLAlchemy 2 assíncrono, asyncpg</td><td>JWT, regras de negócio, validação e serialização REST</td></tr>
+    <tr><td>Banco</td><td>PostgreSQL 16</td><td>Integridade relacional, FKs, unique constraints e consultas</td></tr>
+    <tr><td>Infra</td><td>Docker Compose</td><td>db, api, web, pgAdmin, PgBouncer, backup e exporter</td></tr>
+    <tr><td>Segurança</td><td>Argon2 + JWT HS256</td><td>Hash de senha e sessão stateless com expiração</td></tr>
+  </tbody>
+</table>
+
+<h2>6. Banco de dados e migrações</h2>
+<p>
+  O banco foi tratado como parte do produto, não como detalhe de infraestrutura.
+  As migrações são versionadas e o runner registra versão e checksum em
+  <code>app.schema_migrations</code>; assim, uma migração já aplicada não pode
+  ser alterada silenciosamente. O seed é idempotente e pode ser executado várias
+  vezes sem duplicar registros.
+</p>
+<table>
+  <thead><tr><th>Grupo</th><th>Tabelas principais</th><th>Papel</th></tr></thead>
+  <tbody>
+    <tr><td>Identidade</td><td><code>app.users</code>, <code>app.user_interests</code>, <code>app.notification_preferences</code></td><td>Conta, interesses e preferências de alerta.</td></tr>
+    <tr><td>Catálogo</td><td><code>app.categories</code>, <code>app.venues</code></td><td>Categorias culturais e locais georreferenciados.</td></tr>
+    <tr><td>Agenda</td><td><code>app.events</code>, <code>app.event_categories</code>, <code>app.favorites</code></td><td>Eventos, relação N:N e “Tenho interesse”.</td></tr>
+    <tr><td>Reputação</td><td><code>app.reviews</code></td><td>Nota de 1 a 5 e comentário por usuário/evento.</td></tr>
+    <tr><td>Comunicação</td><td><code>app.notifications</code></td><td>Novos eventos, alterações e cancelamentos.</td></tr>
+    <tr><td>Moderação</td><td><code>app.reports</code></td><td>Denúncias de evento ou avaliação com status.</td></tr>
+    <tr><td>Segurança</td><td><code>app.password_reset_tokens</code>, <code>audit.log</code></td><td>Recuperação de acesso e trilha de auditoria.</td></tr>
+  </tbody>
+</table>
+<h3>6.1 Integridade e regras no banco</h3>
+<ul>
+  <li>E-mail e slug são <code>citext</code> únicos; e-mail duplicado retorna 409.</li>
+  <li>Favorito tem PK composta por usuário e evento; não existe duplicidade.</li>
+  <li>Avaliação tem unique por evento/usuário e só é aceita após o término do evento.</li>
+  <li>Preço, capacidade, datas, coordenadas e status têm checks no schema.</li>
+  <li>Triggers atualizam <code>updated_at</code> e registram auditoria em tabelas sensíveis.</li>
+  <li>Índices GIN cobrem busca textual e trigramas; GiST cobre proximidade geográfica.</li>
+  <li>Papéis <code>ilharole_app</code> e <code>ilharole_readonly</code> aplicam menor privilégio.</li>
+</ul>
+<p>
+  O seed de demonstração cria cinco usuários, dez categorias, cinco locais,
+  doze eventos (incluindo um realizado e um cancelado), favoritos, avaliações,
+  notificações e uma denúncia. Isso permite avaliar as telas em estados
+  diferentes sem editar o banco manualmente.
+</p>
+<ul>
+  <li><code>0001_domain_schema</code>: usuários, categorias, locais, eventos, favoritos, avaliações e notificações.</li>
+  <li><code>0002_audit</code>: trilha de auditoria genérica e retenção.</li>
+  <li><code>0003_indexes_and_search</code>: full-text em português, trigramas e busca geográfica.</li>
+  <li><code>0004_analytics</code>: views e materialized view de analytics.</li>
+  <li><code>0005_profile_and_account</code>: perfil, interesses, preferências, denúncias e tokens de recuperação.</li>
+  <li><code>0006_notification_cancel_kind</code>: tipo dedicado de notificação de cancelamento.</li>
+</ul>
+
+
+<h2>7. Funcionalidades novas em detalhe</h2>
+<p class="lead">
+  Esta seção descreve o que foi construído além da v1, por domínio. A ideia é
+  explicar não só “o que aparece na tela”, mas também o que existe por trás de
+  cada fluxo: validação, regra de negócio, persistência e evidência de teste.
+</p>
+
+<div class="features">
+<h3>7.1 Autenticação, sessão e segurança</h3>
+<p>
+  A v1 simulava login e logout. A v2 tem cadastro e autenticação reais: a senha
+  é convertida em hash Argon2 com salt individual e nunca é devolvida pela API.
+  O login gera um JWT HS256 com <code>sub</code>, emissão e expiração; o token é
+  armazenado no <code>localStorage</code> e enviado como
+  <code>Authorization: Bearer</code>. A API valida assinatura, expiração,
+  existência e atividade do usuário antes de liberar rotas protegidas.
+</p>
+<p>
+  A tela 3 permite login, cadastro com bairro e interesses e solicitação de
+  recuperação. A API também expõe redefinição por token de uso único, alteração
+  de senha autenticada e desativação de conta. Os testes cobrem hash/verify,
+  round-trip do JWT e rejeição de token inválido.
+</p>
+
+<h3>7.2 Perfil e central do usuário</h3>
+<p>
+  O perfil deixou de ser uma tela estática. Ele reúne dados pessoais, bio,
+  bairro, interesses culturais, preferências de alerta e indicadores de uso
+  (favoritos, avaliações, eventos publicados e denúncias). As abas permitem
+  navegar por agenda, avaliações, eventos, notificações, denúncias e segurança
+  sem sair do contexto da conta.
+</p>
+<p>
+  A edição usa <code>PATCH /api/me/perfil</code>; interesses são convertidos para
+  categorias do banco, inclusive com aliases como “Música e reggae” →
+  “Música/Reggae”. As preferências usam <code>PUT /api/me/preferencias</code> e
+  são consultadas antes de qualquer notificação. O e-mail é somente leitura
+  nesta versão.
+</p>
+
+<h3>7.3 Eventos, feed, busca e mapa</h3>
+<p>
+  O feed carrega <code>GET /api/eventos</code> com limite e filtros opcionais de
+  busca, bairro, categoria e período. A API monta a consulta com join de local,
+  subconsulta de categoria e ordenação por data. O front-end mantém filtros
+  simultâneos e um fallback local caso a API esteja indisponível.
+</p>
+<p>
+  A ficha de detalhes exibe banner, descrição, categoria, bairro, status,
+  organizador, endereço, coordenadas e mapa Leaflet focado no local. Eventos
+  cancelados ganham alerta visual; IDs inexistentes exibem o estado 404. O botão
+  de compartilhar copia um link canônico sem token.
+</p>
+
+<h3>7.4 Favoritos e agenda pessoal</h3>
+<p>
+  “Tenho interesse” passou a ser uma operação persistida. O front-end faz
+  atualização otimista e chama <code>POST</code> ou <code>DELETE</code> em
+  <code>/api/eventos/{id}/favorito</code>. A agenda consulta
+  <code>/api/me/agenda</code> e mostra os eventos em ordem cronológica, com
+  status atualizado e remoção. A chave composta no banco impede duplicidade.
+</p>
+
+<h3>7.5 Avaliações</h3>
+<p>
+  O formulário de avaliação só aparece para eventos realizados. A API reforça a
+  regra: rejeita evento futuro, cancelado e avaliação duplicada. A nota é um
+  inteiro de 1 a 5 e o comentário é opcional. O perfil lista as avaliações do
+  usuário e a ficha do evento lista as avaliações públicas com autor e data.
+</p>
+
+<h3>7.6 Notificações e preferências</h3>
+<p>
+  Quando um evento é publicado, a API procura usuários com interesse na
+  categoria ou no bairro, exclui o próprio organizador e respeita a flag
+  <code>new_events</code>. Quando um evento é alterado ou cancelado, os usuários
+  que o favoritaram recebem aviso, respeitando <code>event_changes</code>. O
+  perfil mostra o histórico e permite marcar tudo como lido.
+</p>
+<p>
+  Essa é uma das diferenças mais relevantes em relação à v1: antes a lista de
+  notificações era fixa; agora ela é gerada a partir de ações reais no banco e
+  pode ser desligada por tipo.
+</p>
+
+<h3>7.7 Denúncias e moderação</h3>
+<p>
+  O formulário permite denunciar uma publicação ou um comentário específico.
+  Para avaliações, o front-end lista os comentários do evento e envia o
+  <code>review_id</code>; para eventos, envia <code>event_id</code>. A API grava
+  motivo, descrição, denunciante e status <code>EM_ANALISE</code>. O perfil do
+  usuário lista suas denúncias sem expor publicamente sua identidade.
+</p>
+
+<h3>7.8 Área do organizador</h3>
+<p>
+  O organizador autenticado publica eventos com categoria, local, bairro,
+  data/hora, banner, preço e capacidade. A API valida data futura e associa o
+  evento ao <code>organizer_id</code> do token. A área lista as publicações do
+  usuário, permite abrir a ficha e cancelar; o cancelamento dispara
+  notificações para os favoritos.
+</p>
+
+<h3>7.9 Persistência e modelo de dados</h3>
+<p>
+  A v2 tem seis migrações e um seed idempotente. O schema cobre identidade,
+  catálogo, agenda, reputação, comunicação, moderação e segurança. Há auditoria,
+  busca textual em português, trigramas, geolocalização e analytics. O runner
+  de migração detecta drift por checksum.
+</p>
+
+<h3>7.10 Docker e operação</h3>
+<p>
+  O Compose existente foi ampliado, não duplicado. O serviço <code>db</code> usa
+  configuração própria, volume de scripts e porta publicada apenas no loopback.
+  Há perfis opcionais para pgAdmin, PgBouncer, backup automático e métricas
+  Prometheus. Scripts PowerShell e Bash cobrem migração, seed, reset, restore,
+  check, stats, smoke tests, logs e reaplicação de papéis.
+</p>
+
+<h3>7.11 Qualidade, testes e correções</h3>
+<p>
+  A suíte tem 10 testes de back-end (health, contrato OpenAPI, Argon2, JWT,
+  slug/data) e 29 de front-end (componentes, marcadores, perfil e login). O build
+  de produção é validado com <code>tsc --noEmit</code> e <code>vite build</code>.
+  O fluxo real foi testado com Selenium: login, feed, perfil, agenda e meus
+  eventos contra a API e o PostgreSQL.
+</p>
+<p>
+  Duas correções importantes entraram nesta versão: a animação dos marcadores
+  foi separada em duas camadas para o ícone não desaparecer ao sair do hover; e
+  um Error Boundary foi adicionado para que uma exceção de runtime mostre uma
+  mensagem amigável em vez de tela branca.
+</p>
+</div>
+
+<h2>8. Telas e estados</h2>
+<p class="small">
+  Capturas geradas em 22/11/2026 com a API e o PostgreSQL ativos. A conta usada
+  é a conta de demonstração <strong>produtor@example.com</strong> (senha <strong>demo1234</strong>).
+</p>
+
+<div class="shot">
+  <img src="prints/01_login.png" alt="Tela de login e cadastro" />
+  <div class="cap">
+    <strong>Tela 3 — Login, cadastro e recuperação de acesso.</strong>
+    <span class="pill">RF01a</span><span class="pill">RF01b</span><span class="pill">RF09</span>
+    <span class="pill us">US01</span>
+    <br />
+    Permite autenticar com e-mail/senha, criar conta com bairro e interesses
+    culturais e solicitar link de recuperação. O botão “Preencher conta demo”
+    acelera a avaliação. A sessão real usa JWT e os dados exibidos vêm da API.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/02_feed_mapa.png" alt="Feed com mapa" />
+  <div class="cap">
+    <strong>Tela 1 — Feed cultural com mapa interativo.</strong>
+    <span class="pill">RF03</span><span class="pill">RF04</span><span class="pill">RF05</span>
+    <span class="pill rnf">RNF01</span><span class="pill rnf">RNF02</span><span class="pill rnf">RNF06</span>
+    <br />
+    Exibe os eventos carregados da API, marcadores animados por categoria e
+    temas claro/escuro/temático. A contagem de marcadores reflete os eventos
+    reais retornados pelo banco.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/03_feed_filtros.png" alt="Feed com filtros aplicados" />
+  <div class="cap">
+    <strong>Tela 1 — Filtros simultâneos por bairro e categoria.</strong>
+    <span class="pill">RF03</span>
+    <br />
+    Filtros de bairro, categoria e período podem ser combinados. Nesta captura,
+    “Centro Histórico” + “Bumba Meu Boi” reduzem o mapa e a lista a um evento.
+    A API também aceita os mesmos filtros por query string.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/03b_feed_lista.png" alt="Lista de eventos do feed" />
+  <div class="cap">
+    <strong>Tela 1 — Resultado do feed em cards.</strong>
+    <span class="pill">RF03</span><span class="pill">RF04</span><span class="pill">RF05</span>
+    <br />
+    Cada card apresenta categoria, bairro, situação, título, descrição, data,
+    local e ações “Ver detalhes” e “Tenho interesse”. O botão de favorito
+    atualiza a agenda e persiste na API quando há sessão autenticada.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/04_evento_detalhes.png" alt="Detalhes do evento" />
+  <div class="cap">
+    <strong>Tela 2 — Ficha completa do evento.</strong>
+    <span class="pill">RF04</span><span class="pill">RF05</span><span class="pill">RF13</span><span class="pill">RF14</span>
+    <span class="pill us">US03</span><span class="pill us">US04</span><span class="pill us">US08</span>
+    <br />
+    Mostra banner, categoria, bairro, status, data/horário, organizador,
+    endereço, coordenadas e mapa Leaflet focado no local. Permite favoritar,
+    copiar link público e abrir o formulário de denúncia.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/05_evento_avaliacoes.png" alt="Avaliações pós-evento" />
+  <div class="cap">
+    <strong>Tela 2 — Avaliações de evento realizado.</strong>
+    <span class="pill">RF06</span>
+    <span class="pill us">US06</span>
+    <br />
+    O formulário só é liberado para eventos com situação REALIZADO. A API
+    bloqueia eventos futuros/cancelados e impede mais de uma avaliação por
+    usuário/evento. As notas e comentários ficam persistidos no banco.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/06_evento_cancelado.png" alt="Evento cancelado" />
+  <div class="cap">
+    <strong>Tela 2 — Estado de evento cancelado.</strong>
+    <span class="pill">RF04</span><span class="pill">RF07</span><span class="pill">RF11</span>
+    <br />
+    O status CANCELADO é destacado em vermelho, mas a ficha permanece
+    consultável. O cancelamento é feito pela API e dispara notificação para
+    quem havia favoritado o evento.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/07_evento_404.png" alt="Estado 404" />
+  <div class="cap">
+    <strong>Tela 2 — Estado 404 padronizado.</strong>
+    <span class="pill">RF04</span><span class="pill rnf">RNF04</span>
+    <br />
+    Um identificador inexistente retorna a mensagem amigável de recurso não
+    encontrado, sem expor stack trace. A API responde 404 e o front-end
+    apresenta uma rota de retorno ao feed.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/08_evento_denuncia.png" alt="Denúncia de avaliação" />
+  <div class="cap">
+    <strong>Tela 2 — Denúncia de evento ou avaliação.</strong>
+    <span class="pill">RF14</span>
+    <br />
+    O formulário permite escolher o alvo (evento ou comentário), o motivo e uma
+    descrição. Para avaliações, o seletor lista os comentários do evento. O
+    registro é enviado à moderação e a identidade do denunciante não é exibida
+    publicamente.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/09_agenda.png" alt="Minha agenda" />
+  <div class="cap">
+    <strong>Tela 4 — Minha agenda pessoal.</strong>
+    <span class="pill">RF05</span><span class="pill">RF10</span><span class="pill">RF11</span>
+    <span class="pill us">US04</span><span class="pill us">US07</span>
+    <br />
+    Lista os eventos favoritados em ordem cronológica, com situação atualizada
+    e ação de remoção. A rota autenticada <code>/api/me/agenda</code> retorna
+    os favoritos reais do usuário.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/10_organizador.png" alt="Área do organizador" />
+  <div class="cap">
+    <strong>Tela 5 — Área do organizador.</strong>
+    <span class="pill">RF02</span><span class="pill">RF07</span><span class="pill">RF11</span>
+    <span class="pill us">US02</span><span class="pill us">US05</span>
+    <br />
+    Permite publicar evento com categoria, bairro, data futura, local e banner,
+    além de listar as próprias publicações e cancelar uma atração. A API valida
+    data futura e vincula o evento ao organizador autenticado.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/11_perfil_dados.png" alt="Perfil — meus dados" />
+  <div class="cap">
+    <strong>Tela 6 — Central do usuário: meus dados.</strong>
+    <span class="pill">RF01b</span><span class="pill">RF08</span><span class="pill">RF12</span>
+    <span class="pill us">US01</span>
+    <br />
+    Reúne avatar, tipo de conta, e-mail, bairro, bio, interesses culturais e
+    indicadores de uso. Nome, bairro, bio e interesses são persistidos via
+    <code>PATCH /api/me/perfil</code>.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/12_perfil_agenda.png" alt="Perfil — minha agenda" />
+  <div class="cap">
+    <strong>Tela 6 — Aba Minha agenda.</strong>
+    <span class="pill">RF05</span><span class="pill">RF10</span>
+    <br />
+    Consolida os favoritos dentro do perfil, com data, status, local e remoção
+    da agenda. Funciona como atalho para a tela 4.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/13_perfil_avaliacoes.png" alt="Perfil — avaliações" />
+  <div class="cap">
+    <strong>Tela 6 — Aba Avaliações.</strong>
+    <span class="pill">RF06</span>
+    <br />
+    Lista somente as avaliações feitas pelo usuário em eventos já realizados,
+    com nota, estrelas, comentário, data e link para o evento.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/14_perfil_eventos.png" alt="Perfil — meus eventos" />
+  <div class="cap">
+    <strong>Tela 6 — Aba Meus eventos.</strong>
+    <span class="pill">RF02</span><span class="pill">RF07</span>
+    <br />
+    Mostra as publicações vinculadas ao <code>organizerId</code> do perfil, com
+    situação e acesso à ficha ou à área do organizador.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/15_perfil_notificacoes.png" alt="Perfil — notificações" />
+  <div class="cap">
+    <strong>Tela 6 — Aba Notificações e alertas.</strong>
+    <span class="pill">RF08</span><span class="pill">RF11</span><span class="pill">RF12</span>
+    <br />
+    Permite ativar/desativar novos eventos, alterações/cancelamentos e resumo
+    semanal. As flags são salvas no banco e consultadas pelo serviço de
+    notificação antes de qualquer disparo.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/16_perfil_denuncias.png" alt="Perfil — denúncias" />
+  <div class="cap">
+    <strong>Tela 6 — Aba Denúncias.</strong>
+    <span class="pill">RF14</span>
+    <br />
+    Lista as denúncias do usuário com alvo, motivo, descrição, data e status
+    “Em análise”. O denunciante não é exposto publicamente.
+  </div>
+</div>
+
+<div class="shot">
+  <img src="prints/17_perfil_seguranca.png" alt="Perfil — segurança" />
+  <div class="cap">
+    <strong>Tela 6 — Aba Segurança e privacidade.</strong>
+    <span class="pill rnf">RNF03</span><span class="pill rnf">RNF06</span>
+    <br />
+    Exibe a sessão JWT, permite alterar a senha via API, encerrar a sessão e
+    resume quais dados pessoais são guardados e com qual finalidade.
+  </div>
+</div>
+
+<section class="sprint-page">
+  <h2>9. Relatório de Sprint 1 (1 página)</h2>
+  <p><strong>Sprint:</strong> S1 · <strong>Período:</strong> 01/11/2026 a 22/11/2026 · <strong>Meta:</strong> 25% dos RFs essenciais.</p>
+
+  <h3>Entregas realizadas</h3>
+  <ul>
+    <li>Modelagem PostgreSQL com 6 migrações, extensões, papéis e seed de demonstração.</li>
+    <li>RF01a: cadastro, login, JWT, Argon2, recuperação de senha e alteração de senha.</li>
+    <li>RF03: feed com busca e filtros por bairro, categoria e período.</li>
+    <li>RF01b: perfil, bairro, bio, interesses e preferências de alerta.</li>
+    <li>RF04/RF05/RF06/RF10: detalhes com mapa, favoritos, agenda e avaliações.</li>
+    <li>RF08/RF11/RF12: notificações de novos eventos, alterações/cancelamentos e preferências.</li>
+    <li>RF14: denúncia de eventos e avaliações, com fila de moderação.</li>
+    <li>Docker Compose com db, api, web, pgAdmin, PgBouncer, backup e exporter.</li>
+  </ul>
+
+  <h3>Evidências</h3>
+  <table>
+    <thead><tr><th>Indicador</th><th>Resultado</th></tr></thead>
+    <tbody>
+      <tr><td>RFs essenciais com fluxo principal</td><td>7 de 7</td></tr>
+      <tr><td>Meta de 25%</td><td>Superada (RF01a + RF03 e complementos)</td></tr>
+      <tr><td>Testes automatizados</td><td>10 back-end + 29 front-end</td></tr>
+      <tr><td>Build de produção</td><td>Concluído</td></tr>
+      <tr><td>Banco</td><td>6 migrações aplicadas; db-check e db-test ok</td></tr>
+      <tr><td>E2E</td><td>Login, feed, perfil, agenda e meus eventos</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Riscos e próximos passos</h3>
+  <ul>
+    <li><strong>RF07:</strong> concluir a edição de campos do evento na interface (a API já suporta PATCH).</li>
+    <li><strong>RF09:</strong> criar a tela de redefinição com token (a API já valida expiração e uso único).</li>
+    <li><strong>Notificações:</strong> integrar envio real de e-mail/push.</li>
+    <li><strong>Moderação:</strong> criar painel administrativo para tratar denúncias.</li>
+    <li><strong>Qualidade:</strong> adicionar testes E2E ao CI e medir RNF01/RNF06.</li>
+  </ul>
+
+  <p class="small">
+    <strong>Observação:</strong> a entrega cumpre o mínimo cumulativo de 25% dos
+    requisitos essenciais do PRD v2 e inclui evidências de execução real contra
+    o PostgreSQL.
+  </p>
+</section>
+
+<h2>10. Critérios de entrega e checklist</h2>
+<ul class="checklist">
+  <li><strong>relatorio.pdf</strong> com capturas de cada tela/estado, descrição das funções e RFs atendidos.</li>
+  <li><strong>codigo/</strong> com o código-fonte sem <code>node_modules</code>, <code>.git</code>, caches ou ambiente local.</li>
+  <li><strong>repositorio.txt</strong> com o link público do GitHub.</li>
+  <li>Nome completo de todos os seis integrantes neste PDF.</li>
+  <li>Mínimo cumulativo de 25% dos RFs essenciais: atendido e superado (7/7 com fluxo principal).</li>
+  <li>Execução local documentada: Docker Compose, migrações, seed, API e front-end.</li>
+</ul>
+
+<h2>11. Como executar a entrega</h2>
+<pre style="border:2px solid #111;background:#f7f7f7;padding:8px;font-size:8.8pt;white-space:pre-wrap;">cp devops/.env.example devops/.env
+docker compose -f devops/docker-compose.yml up --build -d
+./devops/scripts/db-migrate.sh
+./devops/scripts/db-seed.sh</pre>
+<p>
+  Front-end: <strong>http://localhost:5173</strong> · API: <strong>http://localhost:8000</strong> ·
+  Swagger: <strong>http://localhost:8000/docs</strong>.
+</p>
+<p>
+  Conta de demonstração: <strong>produtor@example.com</strong> / <strong>demo1234</strong>.
+</p>
+
+
+<h2>12. Limitações e próximos passos</h2>
+<p>
+  A entrega é um protótipo acadêmico funcional, não um produto em produção. O
+  objetivo da Sprint 1 foi provar o fluxo essencial com banco real; por isso,
+  alguns itens foram implementados na API mas ainda não ganharam interface, e
+  outros dependem de serviços externos.
+</p>
+<table>
+  <thead><tr><th>Item</th><th>Situação</th><th>Próximo passo</th></tr></thead>
+  <tbody>
+    <tr><td>RF07 — edição de evento</td><td>API de PATCH pronta; botão da UI ainda é demonstrativo.</td><td>Criar formulário inline de edição na área do organizador.</td></tr>
+    <tr><td>RF09 — redefinição de senha</td><td>API de token e solicitação prontas; falta a tela de nova senha.</td><td>Adicionar rota <code>#/redefinir-senha?token=...</code>.</td></tr>
+    <tr><td>Notificações externas</td><td>Notificações internas geradas e persistidas.</td><td>Integrar e-mail transacional e/ou push.</td></tr>
+    <tr><td>Moderação</td><td>Denúncias gravadas com status.</td><td>Criar painel administrativo para julgar e remover conteúdo.</td></tr>
+    <tr><td>Mídia</td><td>Banner por URL.</td><td>Implementar upload com storage e validação de imagem.</td></tr>
+    <tr><td>Qualidade</td><td>Testes unitários e contrato; E2E manual validado.</td><td>Adicionar E2E ao CI e medir RNF01/RNF06.</td></tr>
+  </tbody>
+</table>
+<p>
+  Também estão fora de escopo, por decisão do PRD: pagamentos/bilheteria, chat
+  privado em tempo real e hospedagem própria de tiles de mapa.
+</p>
+
+
+<h2>Anexo A — Conteúdo do pacote de entrega</h2>
+<p>
+  O arquivo <strong>IlhaRole_entrega_v2.zip</strong> contém exatamente os três
+  itens obrigatórios, sem <code>node_modules</code>, <code>.git</code>,
+  <code>dist</code>, caches ou arquivos <code>.env</code> reais.
+</p>
+<pre style="border:2px solid #111;background:#f7f7f7;padding:8px;font-size:8.8pt;white-space:pre-wrap;">IlhaRole_entrega_v2.zip
+├── relatorio.pdf
+├── repositorio.txt
+└── codigo/
+    ├── backend/        API FastAPI, modelos, schemas, testes e requirements
+    ├── devops/         Compose, Dockerfiles, migrações, seed e scripts
+    ├── frontend/       React, Vite, componentes, páginas, API client e testes
+    ├── openspec/       especificações e histórico de mudanças
+    ├── .gitignore
+    ├── .gitattributes
+    └── README.md</pre>
+<p>
+  As 18 capturas também permanecem em <code>entrega/v2/prints/</code> para
+  conferência separada. O PDF é a fonte principal do relatório; as imagens já
+  estão embutidas nele.
+</p>
+
+<div class="footer-note">
+  IlhaRolê · Relatório de Entrega v2 · 22/11/2026 · Repositório:
+  https://github.com/EmanuelSilva69/IlhaRol-.git · Equipe: Emanuel Lopes Silva,
+  José Nunes de Sousa Neto, Josuel Pinheiro Barros Junior, Leonidas Ferreira da
+  Silva Serra, Marcos Vinicius Jansem Oliveira e Thales Aymar Fortes de Souza.
+</div>
+
+</body>
+</html>
