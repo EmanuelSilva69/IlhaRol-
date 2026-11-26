@@ -2,11 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
+from .errors import register_error_handlers
 from .routers import auth, categories, events, health, profile, reports
 
 settings = get_settings()
 
 app = FastAPI(title="IlhaRolê API", version="0.2.0")
+register_error_handlers(app)
 
 app.add_middleware(
     CORSMiddleware,
