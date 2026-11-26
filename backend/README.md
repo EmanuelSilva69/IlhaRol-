@@ -85,6 +85,21 @@ docker compose -f devops/docker-compose.yml up -d db
 docker compose -f devops/docker-compose.yml run --rm api pytest -q
 ```
 
-A suíte cobre health, contrato OpenAPI, hash/verify Argon2, JWT e helpers de
-slug/data. Os fluxos com PostgreSQL foram validados manualmente contra o banco
-local e estão descritos em `devops/db/README.md`.
+Sem banco, rodam só os testes unitários (health, contrato OpenAPI, Argon2, JWT
+e helpers); os de integração são pulados.
+
+Os testes de integração exercitam a API contra um PostgreSQL real. Eles usam um
+banco separado, terminado em `_test`, que é recriado a cada execução com
+`devops/db/init` e `devops/db/migrations`; o banco de desenvolvimento não é tocado.
+
+```bash
+docker compose -f devops/docker-compose.yml up -d db
+docker compose -f devops/docker-compose.yml run --rm \
+  -v "$(pwd)/devops/db:/devops/db:ro" \
+  -e ILHAROLE_DB_DIR=/devops/db \
+  -e TEST_DATABASE_URL="postgresql://<POSTGRES_USER>:<POSTGRES_PASSWORD>@db:5432/ilharole_test" \
+  api pytest -q
+```
+
+O usuário de `TEST_DATABASE_URL` precisa poder criar bancos e extensões (o
+`POSTGRES_USER` do compose pode).
