@@ -76,6 +76,14 @@ async def get_agenda(
     return await profile_service.get_agenda(session, user)
 
 
+@router.get("/eventos", response_model=list[EventRead])
+async def get_my_events(
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> list[EventRead]:
+    return await profile_service.list_my_events(session, user)
+
+
 @router.get("/notificacoes", response_model=list[NotificationRead])
 async def get_notifications(
     user: User = Depends(get_current_user),

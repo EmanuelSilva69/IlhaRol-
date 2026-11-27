@@ -109,6 +109,12 @@ async def get_agenda(session: AsyncSession, user: User) -> list[EventRead]:
     return await serialize_events(session, events, current_user_id=user.id)
 
 
+async def list_my_events(session: AsyncSession, user: User) -> list[EventRead]:
+    """Todas as publicações do organizador, inclusive rascunhos e canceladas."""
+    events = await events_repo.list_by_organizer(session, user.id)
+    return await serialize_events(session, events, current_user_id=user.id)
+
+
 async def list_notifications(session: AsyncSession, user: User) -> list[NotificationRead]:
     return [
         await serialize_notification(session, notification)

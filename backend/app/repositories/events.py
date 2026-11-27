@@ -75,6 +75,18 @@ async def list_feed(
     return list(await session.scalars(statement))
 
 
+async def list_by_organizer(
+    session: AsyncSession, organizer_id: uuid.UUID
+) -> list[Event]:
+    return list(
+        await session.scalars(
+            select(Event)
+            .where(Event.organizer_id == organizer_id, Event.deleted_at.is_(None))
+            .order_by(Event.starts_at)
+        )
+    )
+
+
 async def list_favorited_by(session: AsyncSession, user_id: uuid.UUID) -> list[Event]:
     return list(
         await session.scalars(
