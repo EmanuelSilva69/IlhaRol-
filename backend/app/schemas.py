@@ -3,10 +3,19 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    EmailStr,
+    Field,
+    field_validator,
+    model_validator,
+)
 
 UserRole = Literal["visitor", "producer", "admin"]
 FeedPeriod = Literal["PROXIMOS", "FIM_DE_SEMANA", "PASSADOS"]
+
+FREE_EVENT_WITH_PRICE = "Evento gratuito não pode ter preço"
 
 
 class RegisterRequest(BaseModel):
@@ -106,8 +115,8 @@ class EventCreate(BaseModel):
     venue_name: str = Field(min_length=2, max_length=160)
     address: str | None = Field(default=None, max_length=300)
     neighborhood: str | None = Field(default=None, max_length=120)
-    latitude: float | None = Field(default=None, ge=-90, le=90)
-    longitude: float | None = Field(default=None, ge=-180, le=180)
+    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(ge=-180, le=180)
     banner_url: str | None = Field(default=None, max_length=1000)
     price_cents: int = Field(default=0, ge=0)
     is_free: bool = True
@@ -120,6 +129,12 @@ class EventCreate(BaseModel):
         if starts is not None and value <= starts:
             raise ValueError("ends_at deve ser posterior a starts_at")
         return value
+
+    @model_validator(mode="after")
+    def free_event_has_no_price(self) -> EventCreate:
+        if self.is_free and self.price_cents > 0:
+            raise ValueError(FREE_EVENT_WITH_PRICE)
+        return self
 
 
 class EventUpdate(BaseModel):
@@ -137,6 +152,12 @@ class EventUpdate(BaseModel):
     price_cents: int | None = Field(default=None, ge=0)
     is_free: bool | None = None
     capacity: int | None = Field(default=None, gt=0)
+
+    @model_validator(mode="after")
+    def coordinates_come_together(self) -> EventUpdate:
+        if (self.latitude is None) != (self.longitude is None):
+            raise ValueError("Informe latitude e longitude juntas")
+        return self
 
 
 class ReviewCreate(BaseModel):

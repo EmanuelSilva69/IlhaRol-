@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..exceptions import (
     BusinessRuleError,
     ConflictError,
+    InvalidInputError,
     NotFoundError,
     PermissionDeniedError,
 )
@@ -15,6 +16,7 @@ from ..models import Event, EventCategory, Favorite, Review, User
 from ..repositories import catalog as catalog_repo
 from ..repositories import events as events_repo
 from ..schemas import (
+    FREE_EVENT_WITH_PRICE,
     EventCreate,
     EventRead,
     EventUpdate,
@@ -173,6 +175,13 @@ async def update_event(
         raise BusinessRuleError("A data de término deve ser posterior à de início")
     if payload.starts_at is not None and starts_at <= datetime.now(timezone.utc):
         raise BusinessRuleError("A data e o horário precisam ser futuros")
+
+    is_free = payload.is_free if payload.is_free is not None else event.is_free
+    price_cents = (
+        payload.price_cents if payload.price_cents is not None else event.price_cents
+    )
+    if is_free and price_cents > 0:
+        raise InvalidInputError(FREE_EVENT_WITH_PRICE)
 
     schedule_or_place_changed = False
 
