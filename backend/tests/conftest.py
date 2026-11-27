@@ -223,7 +223,7 @@ async def insert_event(
     from sqlalchemy import select
 
     from app.models import Category, Event, EventCategory, User
-    from app.services import event_slug
+    from app.slugs import event_slug
 
     async with session_factory() as session:
         organizer = await session.scalar(select(User).where(User.email == organizer_email))

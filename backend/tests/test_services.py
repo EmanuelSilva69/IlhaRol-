@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
-from app.services import event_slug, format_time_range, slugify
+from app.serializers import format_time_range
+from app.slugs import event_slug, slugify
 
 
 def test_slugify_removes_accents_and_spaces():
