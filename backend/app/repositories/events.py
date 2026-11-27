@@ -51,9 +51,13 @@ async def list_feed(
         statement = statement.where(Event.id.in_(category_events))
 
     if q:
-        term = f"%{q.strip()}%"
+        unaccent = func.unaccent
+        term = unaccent(f"%{q.strip()}%")
         statement = statement.where(
-            or_(Event.title.ilike(term), Event.description.ilike(term))
+            or_(
+                unaccent(Event.title).ilike(term),
+                unaccent(Event.description).ilike(term),
+            )
         )
 
     if periodo == "PASSADOS":
