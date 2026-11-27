@@ -220,6 +220,33 @@ async def test_create_event_ending_before_start_returns_422(client, producer):
     assert resp.status_code == 422
 
 
+async def test_create_event_requires_coordinates(client, producer):
+    payload = event_payload()
+    del payload["longitude"]
+
+    resp = await client.post("/api/eventos", json=payload, headers=producer)
+
+    assert resp.status_code == 422
+    assert resp.json()["errors"][0]["campo"] == "longitude"
+
+
+async def test_create_free_event_with_price_returns_422(client, producer):
+    resp = await client.post(
+        "/api/eventos",
+        json=event_payload(is_free=True, price_cents=2000),
+        headers=producer,
+    )
+
+    assert resp.status_code == 422
+
+
+async def test_create_paid_event(client, producer):
+    body = await create_event(client, producer, is_free=False, price_cents=2000)
+
+    assert body["is_free"] is False
+    assert body["price_cents"] == 2000
+
+
 async def test_create_event_unknown_category_returns_400(client, producer):
     resp = await client.post(
         "/api/eventos", json=event_payload(category="inexistente"), headers=producer
@@ -296,6 +323,31 @@ async def test_update_event_to_past_date_returns_400(client, producer):
     assert resp.json() == {"detail": "A data e o horário precisam ser futuros"}
     details = (await client.get(f"/api/eventos/{event['id']}")).json()
     assert details["starts_at"] == event["starts_at"]
+
+
+async def test_update_event_requires_both_coordinates(client, producer):
+    event = await create_event(client, producer)
+
+    resp = await client.patch(
+        f"/api/eventos/{event['id']}", json={"latitude": -2.5}, headers=producer
+    )
+
+    assert resp.status_code == 422
+
+
+async def test_update_price_of_free_event_returns_422(client, producer):
+    event = await create_event(client, producer)
+    url = f"/api/eventos/{event['id']}"
+
+    only_price = await client.patch(url, json={"price_cents": 1500}, headers=producer)
+    now_paid = await client.patch(
+        url, json={"price_cents": 1500, "is_free": False}, headers=producer
+    )
+
+    assert only_price.status_code == 422
+    assert only_price.json() == {"detail": "Evento gratuito não pode ter preço"}
+    assert now_paid.status_code == 200
+    assert now_paid.json()["price_cents"] == 1500
 
 
 async def test_update_schedule_notifies_users_who_saved_the_event(
