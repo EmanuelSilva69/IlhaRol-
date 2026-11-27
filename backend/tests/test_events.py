@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime, timedelta, timezone
 
 from conftest import (
     bearer,
@@ -90,6 +91,27 @@ async def test_feed_filters_by_periodo(client, producer, session_factory):
 
     assert await _titles(client, periodo="PASSADOS") == ["Passado"]
     assert await _titles(client, periodo="PROXIMOS") == ["Esta semana", "Mês que vem"]
+
+
+async def test_feed_weekend_period_uses_saturday_and_sunday(client, producer):
+    from app.services.events import weekend_window
+
+    now = datetime.now(timezone.utc)
+    weekend_start, weekend_end = weekend_window(now)
+    on_weekend = max(weekend_start + timedelta(hours=12), now + timedelta(minutes=5))
+    await create_event(client, producer, title="No fim de semana", starts_at=on_weekend)
+    await create_event(
+        client, producer, title="Na quarta seguinte", starts_at=weekend_end + timedelta(days=2)
+    )
+
+    assert await _titles(client, periodo="FIM_DE_SEMANA") == ["No fim de semana"]
+
+
+async def test_feed_invalid_period_returns_422(client):
+    resp = await client.get("/api/eventos", params={"periodo": "AMANHA"})
+
+    assert resp.status_code == 422
+    assert resp.json()["errors"][0]["campo"] == "query.periodo"
 
 
 async def test_feed_marks_favorites_for_logged_user(client, producer, visitor):

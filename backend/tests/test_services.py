@@ -1,6 +1,9 @@
 from datetime import datetime, timezone
 
+import pytest
+
 from app.serializers import format_time_range
+from app.services.events import weekend_window
 from app.slugs import event_slug, slugify
 
 
@@ -24,3 +27,24 @@ def test_format_time_range_same_day():
     ends = datetime(2026, 12, 6, 22, 0, tzinfo=timezone.utc)
 
     assert format_time_range(starts, ends) == "15:00 às 19:00"
+
+
+@pytest.mark.parametrize(
+    "now",
+    [
+        "2026-11-25T15:00:00-03:00",  # quarta: próximo fim de semana
+        "2026-11-28T10:00:00-03:00",  # sábado: fim de semana corrente
+        "2026-11-29T23:00:00-03:00",  # domingo à noite: ainda o corrente
+    ],
+)
+def test_weekend_window_covers_saturday_and_sunday(now):
+    start, end = weekend_window(datetime.fromisoformat(now))
+
+    assert start.isoformat() == "2026-11-28T00:00:00-03:00"
+    assert end.isoformat() == "2026-11-30T00:00:00-03:00"
+
+
+def test_weekend_window_moves_on_after_sunday():
+    start, _ = weekend_window(datetime.fromisoformat("2026-11-30T01:00:00-03:00"))
+
+    assert start.isoformat() == "2026-12-05T00:00:00-03:00"
