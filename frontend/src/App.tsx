@@ -29,7 +29,7 @@ import AgendaPage from "./pages/AgendaPage";
 import EventDetailsPage from "./pages/EventDetailsPage";
 import FeedPage from "./pages/FeedPage";
 import LoginPage from "./pages/LoginPage";
-import OrganizerPage from "./pages/OrganizerPage";
+import OrganizerPage, { type EventsStatus } from "./pages/OrganizerPage";
 import ProfilePage from "./pages/ProfilePage";
 import type {
   CulturalEvent,
@@ -103,6 +103,7 @@ function App() {
         : event,
     ),
   );
+  const [eventsStatus, setEventsStatus] = useState<EventsStatus>("loading");
   const [notifications, setNotifications] = useState<UserNotification[]>(
     INITIAL_NOTIFICATIONS,
   );
@@ -140,12 +141,14 @@ function App() {
           setNotifications(apiNotifications);
           setReports(apiReports);
           setIsAuthenticated(true);
+          setEventsStatus("ready");
           return;
         }
 
         const publicEvents = await apiListEvents();
         if (!cancelled) {
           setEvents(publicEvents);
+          setEventsStatus("ready");
         }
       } catch (error) {
         if (cancelled) {
@@ -160,6 +163,7 @@ function App() {
         }
 
         // API indisponível: mantém o estado mockado para não quebrar o protótipo.
+        setEventsStatus("error");
       }
     }
 
@@ -276,11 +280,21 @@ function App() {
     setEvents((prev) => [newEvent, ...prev]);
   };
 
-  const handlePublishEvent = (input: NewEventInput) => {
+  const reloadEvents = async () => {
+    setEventsStatus("loading");
+    try {
+      setEvents(await apiListEvents({ token: apiToken }));
+      setEventsStatus("ready");
+    } catch {
+      setEventsStatus("error");
+    }
+  };
+
+  // Com token, só resolve depois que a API confirma; a falha chega à tela.
+  const handlePublishEvent = async (input: NewEventInput) => {
     if (apiToken) {
-      void apiCreateEvent(apiToken, input)
-        .then((event) => setEvents((prev) => [event, ...prev]))
-        .catch(() => addLocalEvent(input));
+      const event = await apiCreateEvent(apiToken, input);
+      setEvents((prev) => [event, ...prev]);
       return;
     }
 
@@ -447,6 +461,8 @@ function App() {
       page = (
         <OrganizerPage
           events={events}
+          eventsStatus={eventsStatus}
+          onRetryEvents={() => void reloadEvents()}
           organizerId={profile.organizerId}
           organizerName={profile.name}
           onCancelEvent={handleCancelEvent}

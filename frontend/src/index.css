@@ -26,6 +26,11 @@ body {
   min-height: 100vh;
 }
 
+input:user-invalid,
+textarea:user-invalid {
+  border-color: #b91c1c;
+}
+
 /* ---------- Microinterações do protótipo ----------
    Todas curtas (200-460ms), disparadas por ação do usuário e desligadas
    quando o sistema pede movimento reduzido (RNF06).                      */
