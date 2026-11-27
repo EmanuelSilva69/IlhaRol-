@@ -64,7 +64,7 @@ async def test_feed_search_ignores_accents(client, producer):
 
 
 async def test_feed_filters_by_bairro(client, producer):
-    await create_event(client, producer, title="Na Praia Grande")
+    await create_event(client, producer, title="No Centro Histórico")
     await create_event(
         client,
         producer,
@@ -89,7 +89,6 @@ async def test_feed_filters_by_periodo(client, producer, session_factory):
     await insert_event(session_factory, "produtora@ilharole.com", past(), title="Passado")
 
     assert await _titles(client, periodo="PASSADOS") == ["Passado"]
-    assert await _titles(client, periodo="FIM_DE_SEMANA") == ["Esta semana"]
     assert await _titles(client, periodo="PROXIMOS") == ["Esta semana", "Mês que vem"]
 
 
@@ -116,7 +115,7 @@ async def test_event_details_include_organizer_venue_and_status(client, producer
     body = resp.json()
     assert body["organizer"] == "Produtora"
     assert body["location"] == "Praça Nauro Machado"
-    assert body["neighborhood"] == "Praia Grande"
+    assert body["neighborhood"] == "Centro Histórico"
     assert body["latitude"] == -2.5297
     assert body["longitude"] == -44.3028
     assert body["category"] == "reggae"

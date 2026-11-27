@@ -4,7 +4,7 @@ from conftest import bearer, register
 
 
 async def test_register_returns_201_with_token_and_profile(client):
-    body = await register(client, neighborhood="Centro", interests=["reggae"])
+    body = await register(client, neighborhood="Centro Histórico", interests=["reggae"])
 
     assert body["token_type"] == "bearer"
     assert body["access_token"]
@@ -12,7 +12,7 @@ async def test_register_returns_201_with_token_and_profile(client):
     assert user["email"] == "ana@ilharole.com"
     assert user["name"] == "Ana"
     assert user["role"] == "visitor"
-    assert user["neighborhood"] == "Centro"
+    assert user["neighborhood"] == "Centro Histórico"
     assert user["interests"] == ["Música/Reggae"]
     assert "password" not in user
     assert "password_hash" not in user

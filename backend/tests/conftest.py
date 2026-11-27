@@ -194,7 +194,7 @@ def event_payload(**overrides: Any) -> dict[str, Any]:
         "starts_at": starts_at.isoformat(),
         "ends_at": (starts_at + timedelta(hours=4)).isoformat(),
         "venue_name": "Praça Nauro Machado",
-        "neighborhood": "Praia Grande",
+        "neighborhood": "Centro Histórico",
         "latitude": -2.5297,
         "longitude": -44.3028,
     }
