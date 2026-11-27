@@ -55,6 +55,14 @@ async def test_feed_search_is_case_insensitive_on_title_and_description(
     ]
 
 
+async def test_feed_search_ignores_accents(client, producer):
+    await create_event(client, producer, title="Música em São Luís")
+    await create_event(client, producer, title="Teatro", description="Peça clássica")
+
+    assert await _titles(client, q="musica em sao luis") == ["Música em São Luís"]
+    assert await _titles(client, q="CLASSICA") == ["Teatro"]
+
+
 async def test_feed_filters_by_bairro(client, producer):
     await create_event(client, producer, title="Na Praia Grande")
     await create_event(
