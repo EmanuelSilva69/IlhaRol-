@@ -116,6 +116,21 @@ async def test_event_details_include_organizer_venue_and_status(client, producer
     assert body["reviews"] == []
 
 
+async def test_finished_event_is_reported_as_realizado(
+    client, producer, session_factory
+):
+    finished = await insert_event(session_factory, "produtora@ilharole.com", past())
+    cancelled = await insert_event(
+        session_factory, "produtora@ilharole.com", past(), status="cancelled"
+    )
+
+    finished_body = (await client.get(f"/api/eventos/{finished}")).json()
+    cancelled_body = (await client.get(f"/api/eventos/{cancelled}")).json()
+
+    assert finished_body["status"] == "REALIZADO"
+    assert cancelled_body["status"] == "CANCELADO"
+
+
 async def test_event_details_not_found_returns_standard_404(client):
     resp = await client.get(f"/api/eventos/{uuid.uuid4()}")
 
