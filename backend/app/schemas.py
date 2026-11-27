@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import (
+    AfterValidator,
     BaseModel,
     ConfigDict,
     EmailStr,
@@ -12,8 +13,11 @@ from pydantic import (
     model_validator,
 )
 
+from .neighborhoods import ensure_supported_neighborhood
+
 UserRole = Literal["visitor", "producer", "admin"]
 FeedPeriod = Literal["PROXIMOS", "FIM_DE_SEMANA", "PASSADOS"]
+Neighborhood = Annotated[str, AfterValidator(ensure_supported_neighborhood)]
 
 FREE_EVENT_WITH_PRICE = "Evento gratuito não pode ter preço"
 
@@ -22,7 +26,7 @@ class RegisterRequest(BaseModel):
     name: str = Field(min_length=2, max_length=80)
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
-    neighborhood: str | None = None
+    neighborhood: Neighborhood | None = None
     interests: list[str] = Field(default_factory=list)
     role: Literal["visitor", "producer"] = "visitor"
 
@@ -61,7 +65,7 @@ class UserProfileRead(BaseModel):
 
 class ProfileUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=2, max_length=80)
-    neighborhood: str | None = Field(default=None, max_length=120)
+    neighborhood: Neighborhood | None = None
     bio: str | None = Field(default=None, max_length=500)
     avatar_url: str | None = Field(default=None, max_length=500)
     interests: list[str] | None = None
@@ -114,7 +118,7 @@ class EventCreate(BaseModel):
     ends_at: datetime
     venue_name: str = Field(min_length=2, max_length=160)
     address: str | None = Field(default=None, max_length=300)
-    neighborhood: str | None = Field(default=None, max_length=120)
+    neighborhood: Neighborhood
     latitude: float = Field(ge=-90, le=90)
     longitude: float = Field(ge=-180, le=180)
     banner_url: str | None = Field(default=None, max_length=1000)
@@ -145,7 +149,7 @@ class EventUpdate(BaseModel):
     ends_at: datetime | None = None
     venue_name: str | None = Field(default=None, min_length=2, max_length=160)
     address: str | None = Field(default=None, max_length=300)
-    neighborhood: str | None = Field(default=None, max_length=120)
+    neighborhood: Neighborhood | None = None
     latitude: float | None = Field(default=None, ge=-90, le=90)
     longitude: float | None = Field(default=None, ge=-180, le=180)
     banner_url: str | None = Field(default=None, max_length=1000)

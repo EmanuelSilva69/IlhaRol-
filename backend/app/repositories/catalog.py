@@ -59,13 +59,3 @@ async def get_venue(session: AsyncSession, venue_id: uuid.UUID) -> Venue | None:
 
 async def find_venue_by_slug(session: AsyncSession, slug: str) -> Venue | None:
     return await session.scalar(select(Venue).where(Venue.slug == slug))
-
-
-async def list_venue_neighborhoods(session: AsyncSession) -> list[str]:
-    neighborhoods = await session.scalars(
-        select(Venue.neighborhood)
-        .where(Venue.neighborhood.is_not(None))
-        .distinct()
-        .order_by(Venue.neighborhood)
-    )
-    return [neighborhood for neighborhood in neighborhoods if neighborhood]

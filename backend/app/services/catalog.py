@@ -5,6 +5,7 @@ import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..models import Category, Venue
+from ..neighborhoods import SAO_LUIS_NEIGHBORHOODS
 from ..repositories import catalog as catalog_repo
 from ..schemas import CategoryRead
 from ..slugs import slugify
@@ -42,8 +43,8 @@ async def list_categories(session: AsyncSession) -> list[CategoryRead]:
     ]
 
 
-async def list_neighborhoods(session: AsyncSession) -> list[str]:
-    return await catalog_repo.list_venue_neighborhoods(session)
+def list_neighborhoods() -> list[str]:
+    return list(SAO_LUIS_NEIGHBORHOODS)
 
 
 async def resolve_category(session: AsyncSession, value: str) -> Category | None:

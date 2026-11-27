@@ -18,7 +18,5 @@ async def list_categories(
 
 
 @router.get("/bairros", response_model=list[str])
-async def list_neighborhoods(
-    session: AsyncSession = Depends(get_session),
-) -> list[str]:
-    return await catalog_service.list_neighborhoods(session)
+async def list_neighborhoods() -> list[str]:
+    return catalog_service.list_neighborhoods()
