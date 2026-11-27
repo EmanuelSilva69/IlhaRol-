@@ -230,6 +230,37 @@ async def test_create_event_requires_coordinates(client, producer):
     assert resp.json()["errors"][0]["campo"] == "longitude"
 
 
+async def test_create_event_requires_supported_neighborhood(client, producer):
+    unknown = await client.post(
+        "/api/eventos", json=event_payload(neighborhood="Bairro Inventado"), headers=producer
+    )
+    payload = event_payload()
+    del payload["neighborhood"]
+    missing = await client.post("/api/eventos", json=payload, headers=producer)
+
+    assert unknown.status_code == 422
+    assert unknown.json()["errors"][0]["campo"] == "neighborhood"
+    assert missing.status_code == 422
+
+
+async def test_update_event_rejects_unknown_neighborhood(client, producer):
+    event = await create_event(client, producer)
+
+    resp = await client.patch(
+        f"/api/eventos/{event['id']}", json={"neighborhood": "Centro"}, headers=producer
+    )
+
+    assert resp.status_code == 422
+
+
+async def test_list_supported_neighborhoods(client):
+    resp = await client.get("/api/bairros")
+
+    assert resp.status_code == 200
+    assert "Centro Histórico" in resp.json()
+    assert "Renascença" in resp.json()
+
+
 async def test_create_free_event_with_price_returns_422(client, producer):
     resp = await client.post(
         "/api/eventos",

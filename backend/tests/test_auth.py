@@ -56,6 +56,25 @@ async def test_register_cannot_self_assign_admin(client):
     assert resp.status_code == 422
 
 
+async def test_register_and_profile_reject_unknown_neighborhood(client):
+    register_resp = await client.post(
+        "/api/auth/register",
+        json={
+            "name": "Ana",
+            "email": "ana@ilharole.com",
+            "password": "SenhaForte123",
+            "neighborhood": "Bairro Inventado",
+        },
+    )
+    headers = bearer(await register(client))
+    profile_resp = await client.patch(
+        "/api/me/perfil", json={"neighborhood": "Bairro Inventado"}, headers=headers
+    )
+
+    assert register_resp.status_code == 422
+    assert profile_resp.status_code == 422
+
+
 async def test_password_is_stored_as_argon2_hash(client, session_factory):
     from app.models import User
 
