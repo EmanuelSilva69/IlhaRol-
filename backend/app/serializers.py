@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,13 +22,6 @@ from .schemas import (
 )
 
 SAO_LUIS_TZ = ZoneInfo("America/Fortaleza")
-
-STATUS_TO_FRONT = {
-    "draft": "ATIVO",
-    "published": "ATIVO",
-    "cancelled": "CANCELADO",
-    "finished": "REALIZADO",
-}
 
 NOTIFICATION_TYPE_TO_FRONT = {
     "event_reminder": "NOVO_EVENTO_COMPATIVEL",
@@ -51,6 +44,15 @@ def format_datetime(value: datetime) -> str:
 
 def format_date(value: datetime) -> str:
     return value.astimezone(SAO_LUIS_TZ).strftime("%Y-%m-%d")
+
+
+def event_status(event: Event, now: datetime) -> str:
+    """Situação exibida: cancelado prevalece; depois do término, realizado."""
+    if event.status == "cancelled":
+        return "CANCELADO"
+    if event.status == "finished" or event.ends_at <= now:
+        return "REALIZADO"
+    return "ATIVO"
 
 
 def format_time_range(starts_at: datetime, ends_at: datetime) -> str:
@@ -116,9 +118,11 @@ async def serialize_events(
         else set()
     )
 
+    now = datetime.now(timezone.utc)
     return [
         _event_read(
             event,
+            status=event_status(event, now),
             category=categories.get(event.id),
             venue=venues.get(event.venue_id) if event.venue_id else None,
             organizer=people.get(event.organizer_id) if event.organizer_id else None,
@@ -132,6 +136,7 @@ async def serialize_events(
 def _event_read(
     event: Event,
     *,
+    status: str,
     category: Category | None,
     venue: Venue | None,
     organizer: User | None,
@@ -156,7 +161,7 @@ def _event_read(
         banner_url=event.cover_url,
         organizer=organizer.display_name if organizer else None,
         organizer_id=str(event.organizer_id) if event.organizer_id else None,
-        status=STATUS_TO_FRONT.get(event.status, "ATIVO"),
+        status=status,
         is_favorite=is_favorite,
         reviews=reviews,
         price_cents=event.price_cents,
