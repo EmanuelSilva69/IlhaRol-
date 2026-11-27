@@ -8,7 +8,7 @@ from zoneinfo import ZoneInfo
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .models import Event, Notification, Report, User
+from .models import Category, Event, Notification, Report, Review, User, Venue
 from .repositories import catalog as catalog_repo
 from .repositories import events as events_repo
 from .repositories import users as users_repo
@@ -61,25 +61,24 @@ def format_time_range(starts_at: datetime, ends_at: datetime) -> str:
     return f"{starts:%d/%m %H:%M} às {ends:%d/%m %H:%M}"
 
 
+def _review_read(review: Review, authors: dict[uuid.UUID, User]) -> ReviewRead:
+    author = authors.get(review.user_id)
+    return ReviewRead(
+        id=str(review.id),
+        author=author.display_name if author else "Usuário",
+        author_id=str(review.user_id),
+        rating=review.rating,
+        comment=review.comment,
+        created_at=format_datetime(review.created_at),
+    )
+
+
 async def serialize_reviews(
     session: AsyncSession, event_id: uuid.UUID
 ) -> list[ReviewRead]:
     reviews = await events_repo.list_reviews(session, event_id)
     authors = await users_repo.get_users(session, (review.user_id for review in reviews))
-
-    return [
-        ReviewRead(
-            id=str(review.id),
-            author=authors[review.user_id].display_name
-            if review.user_id in authors
-            else "Usuário",
-            author_id=str(review.user_id),
-            rating=review.rating,
-            comment=review.comment,
-            created_at=format_datetime(review.created_at),
-        )
-        for review in reviews
-    ]
+    return [_review_read(review, authors) for review in reviews]
 
 
 async def serialize_event(
@@ -87,22 +86,58 @@ async def serialize_event(
     event: Event,
     current_user_id: uuid.UUID | None = None,
 ) -> EventRead:
-    category = await catalog_repo.get_event_category(session, event.id)
-    venue = await catalog_repo.get_venue(session, event.venue_id) if event.venue_id else None
-    organizer = (
-        await users_repo.get_user(session, event.organizer_id)
-        if event.organizer_id
-        else None
+    return (await serialize_events(session, [event], current_user_id))[0]
+
+
+async def serialize_events(
+    session: AsyncSession,
+    events: list[Event],
+    current_user_id: uuid.UUID | None = None,
+) -> list[EventRead]:
+    """Carrega os dados relacionados em lote: o número de consultas não cresce
+    com a quantidade de eventos."""
+    if not events:
+        return []
+
+    event_ids = [event.id for event in events]
+    categories = await catalog_repo.get_event_categories(session, event_ids)
+    venues = await catalog_repo.get_venues(
+        session, {event.venue_id for event in events if event.venue_id}
     )
-    reviews = await serialize_reviews(session, event.id)
+    reviews = await events_repo.list_reviews_for(session, event_ids)
+    people = await users_repo.get_users(
+        session,
+        {event.organizer_id for event in events if event.organizer_id}
+        | {review.user_id for items in reviews.values() for review in items},
+    )
+    favorites = (
+        await events_repo.list_favorite_event_ids(session, current_user_id, event_ids)
+        if current_user_id is not None
+        else set()
+    )
 
-    is_favorite = False
-    if current_user_id is not None:
-        is_favorite = (
-            await events_repo.get_favorite(session, current_user_id, event.id)
-            is not None
+    return [
+        _event_read(
+            event,
+            category=categories.get(event.id),
+            venue=venues.get(event.venue_id) if event.venue_id else None,
+            organizer=people.get(event.organizer_id) if event.organizer_id else None,
+            reviews=[_review_read(review, people) for review in reviews[event.id]],
+            is_favorite=event.id in favorites,
         )
+        for event in events
+    ]
 
+
+def _event_read(
+    event: Event,
+    *,
+    category: Category | None,
+    venue: Venue | None,
+    organizer: User | None,
+    reviews: list[ReviewRead],
+    is_favorite: bool,
+) -> EventRead:
     return EventRead(
         id=str(event.id),
         title=event.title,
@@ -128,17 +163,6 @@ async def serialize_event(
         is_free=event.is_free,
         capacity=event.capacity,
     )
-
-
-async def serialize_events(
-    session: AsyncSession,
-    events: list[Event],
-    current_user_id: uuid.UUID | None = None,
-) -> list[EventRead]:
-    return [
-        await serialize_event(session, event, current_user_id=current_user_id)
-        for event in events
-    ]
 
 
 async def serialize_preferences(

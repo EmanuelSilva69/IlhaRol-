@@ -103,6 +103,38 @@ async def list_reviews(session: AsyncSession, event_id: uuid.UUID) -> list[Revie
     )
 
 
+async def list_reviews_for(
+    session: AsyncSession, event_ids: list[uuid.UUID]
+) -> dict[uuid.UUID, list[Review]]:
+    """Avaliações agrupadas por evento, da mais recente para a mais antiga."""
+    grouped: dict[uuid.UUID, list[Review]] = {event_id: [] for event_id in event_ids}
+    if not event_ids:
+        return grouped
+    reviews = await session.scalars(
+        select(Review)
+        .where(Review.event_id.in_(event_ids))
+        .order_by(Review.created_at.desc())
+    )
+    for review in reviews:
+        grouped[review.event_id].append(review)
+    return grouped
+
+
+async def list_favorite_event_ids(
+    session: AsyncSession, user_id: uuid.UUID, event_ids: list[uuid.UUID]
+) -> set[uuid.UUID]:
+    if not event_ids:
+        return set()
+    return set(
+        await session.scalars(
+            select(Favorite.event_id).where(
+                Favorite.user_id == user_id,
+                Favorite.event_id.in_(event_ids),
+            )
+        )
+    )
+
+
 async def find_review_by_user(
     session: AsyncSession, event_id: uuid.UUID, user_id: uuid.UUID
 ) -> Review | None:
