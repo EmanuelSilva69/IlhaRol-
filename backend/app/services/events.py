@@ -135,6 +135,8 @@ async def update_event(
     ends_at = _aware(payload.ends_at) if payload.ends_at else event.ends_at
     if ends_at <= starts_at:
         raise BusinessRuleError("A data de término deve ser posterior à de início")
+    if payload.starts_at is not None and starts_at <= datetime.now(timezone.utc):
+        raise BusinessRuleError("A data e o horário precisam ser futuros")
 
     schedule_or_place_changed = False
 
