@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,11 +24,13 @@ async def get_active_event(session: AsyncSession, event_id: uuid.UUID) -> Event 
 async def list_feed(
     session: AsyncSession,
     *,
-    now: datetime,
     q: str | None,
     bairro: str | None,
     categoria: str | None,
-    periodo: str | None,
+    starts_from: datetime | None = None,
+    starts_before: datetime | None = None,
+    ends_after: datetime | None = None,
+    ends_before: datetime | None = None,
     limit: int,
     offset: int,
 ) -> list[Event]:
@@ -60,15 +62,14 @@ async def list_feed(
             )
         )
 
-    if periodo == "PASSADOS":
-        statement = statement.where(Event.ends_at < func.now())
-    elif periodo == "FIM_DE_SEMANA":
-        statement = statement.where(
-            Event.starts_at >= now,
-            Event.starts_at <= now + timedelta(days=7),
-        )
-    elif periodo == "PROXIMOS":
-        statement = statement.where(Event.starts_at >= now)
+    if starts_from is not None:
+        statement = statement.where(Event.starts_at >= starts_from)
+    if starts_before is not None:
+        statement = statement.where(Event.starts_at < starts_before)
+    if ends_after is not None:
+        statement = statement.where(Event.ends_at > ends_after)
+    if ends_before is not None:
+        statement = statement.where(Event.ends_at < ends_before)
 
     statement = statement.order_by(Event.starts_at.asc()).offset(offset).limit(limit)
     return list(await session.scalars(statement))

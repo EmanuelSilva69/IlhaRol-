@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, time, timedelta, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,8 +14,21 @@ from ..exceptions import (
 from ..models import Event, EventCategory, Favorite, Review, User
 from ..repositories import catalog as catalog_repo
 from ..repositories import events as events_repo
-from ..schemas import EventCreate, EventRead, EventUpdate, ReviewCreate, ReviewRead
-from ..serializers import format_datetime, serialize_event, serialize_events, serialize_reviews
+from ..schemas import (
+    EventCreate,
+    EventRead,
+    EventUpdate,
+    FeedPeriod,
+    ReviewCreate,
+    ReviewRead,
+)
+from ..serializers import (
+    SAO_LUIS_TZ,
+    format_datetime,
+    serialize_event,
+    serialize_events,
+    serialize_reviews,
+)
 from ..slugs import event_slug
 from .catalog import get_or_create_venue, resolve_category
 from .notifications import notify_favorites, notify_new_event
@@ -39,26 +52,49 @@ def _ensure_can_manage(event: Event, user: User, action: str) -> None:
         raise PermissionDeniedError(f"Apenas o criador pode {action} este evento")
 
 
+def weekend_window(now: datetime) -> tuple[datetime, datetime]:
+    """Sábado 00h até segunda 00h (horário de São Luís) do fim de semana
+    corrente ou do próximo."""
+    local = now.astimezone(SAO_LUIS_TZ)
+    days_until_saturday = (5 - local.weekday()) % 7
+    if local.weekday() == 6:
+        days_until_saturday = -1
+    saturday = datetime.combine(
+        local.date() + timedelta(days=days_until_saturday), time.min, SAO_LUIS_TZ
+    )
+    return saturday, saturday + timedelta(days=2)
+
+
+def _period_filters(periodo: FeedPeriod | None, now: datetime) -> dict[str, datetime]:
+    if periodo == "PASSADOS":
+        return {"ends_before": now}
+    if periodo == "PROXIMOS":
+        return {"starts_from": now}
+    if periodo == "FIM_DE_SEMANA":
+        weekend_start, weekend_end = weekend_window(now)
+        return {"starts_before": weekend_end, "ends_after": max(weekend_start, now)}
+    return {}
+
+
 async def list_feed(
     session: AsyncSession,
     *,
     q: str | None,
     bairro: str | None,
     categoria: str | None,
-    periodo: str | None,
+    periodo: FeedPeriod | None,
     limit: int,
     offset: int,
     user: User | None,
 ) -> list[EventRead]:
     events = await events_repo.list_feed(
         session,
-        now=datetime.now(timezone.utc),
         q=q,
         bairro=bairro,
         categoria=categoria,
-        periodo=periodo,
         limit=limit,
         offset=offset,
+        **_period_filters(periodo, datetime.now(timezone.utc)),
     )
     return await serialize_events(
         session, events, current_user_id=user.id if user else None

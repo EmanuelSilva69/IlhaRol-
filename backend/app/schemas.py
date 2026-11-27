@@ -6,6 +6,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 UserRole = Literal["visitor", "producer", "admin"]
+FeedPeriod = Literal["PROXIMOS", "FIM_DE_SEMANA", "PASSADOS"]
 
 
 class RegisterRequest(BaseModel):

@@ -12,6 +12,7 @@ from ..schemas import (
     EventRead,
     EventUpdate,
     FavoriteResponse,
+    FeedPeriod,
     ReviewCreate,
     ReviewRead,
 )
@@ -26,7 +27,7 @@ async def list_events(
     q: str | None = Query(default=None, max_length=120),
     bairro: str | None = Query(default=None, max_length=120),
     categoria: str | None = Query(default=None, max_length=80),
-    periodo: str | None = Query(default=None),
+    periodo: FeedPeriod | None = Query(default=None),
     limit: int = Query(default=50, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     user: User | None = Depends(get_current_user_optional),
