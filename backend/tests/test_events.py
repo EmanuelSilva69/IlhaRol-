@@ -261,6 +261,21 @@ async def test_update_unknown_event_returns_404(client, producer):
     assert resp.status_code == 404
 
 
+async def test_update_event_to_past_date_returns_400(client, producer):
+    event = await create_event(client, producer)
+
+    resp = await client.patch(
+        f"/api/eventos/{event['id']}",
+        json={"starts_at": past(2).isoformat(), "ends_at": past(1).isoformat()},
+        headers=producer,
+    )
+
+    assert resp.status_code == 400
+    assert resp.json() == {"detail": "A data e o horário precisam ser futuros"}
+    details = (await client.get(f"/api/eventos/{event['id']}")).json()
+    assert details["starts_at"] == event["starts_at"]
+
+
 async def test_update_schedule_notifies_users_who_saved_the_event(
     client, producer, visitor
 ):
