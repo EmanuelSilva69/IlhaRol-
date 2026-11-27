@@ -438,3 +438,34 @@ async def test_cancel_unknown_event_returns_404(client, producer):
     resp = await client.post(f"/api/eventos/{uuid.uuid4()}/cancelar", headers=producer)
 
     assert resp.status_code == 404
+
+
+# Publicações do organizador
+
+
+async def test_my_events_lists_every_status_in_chronological_order(
+    client, producer, session_factory
+):
+    later = await create_event(client, producer, title="Depois", starts_at=future(9))
+    await create_event(client, producer, title="Antes", starts_at=future(2))
+    await client.post(f"/api/eventos/{later['id']}/cancelar", headers=producer)
+    await insert_event(
+        session_factory, "produtora@ilharole.com", future(5), status="draft", title="Rascunho"
+    )
+    other = bearer(await register(client, "outra@ilharole.com", role="producer"))
+    await create_event(client, other, title="De outra pessoa")
+
+    resp = await client.get("/api/me/eventos", headers=producer)
+
+    assert resp.status_code == 200
+    assert [(e["title"], e["status"]) for e in resp.json()] == [
+        ("Antes", "ATIVO"),
+        ("Rascunho", "ATIVO"),
+        ("Depois", "CANCELADO"),
+    ]
+
+
+async def test_my_events_requires_authentication(client):
+    resp = await client.get("/api/me/eventos")
+
+    assert resp.status_code == 401

@@ -22,6 +22,7 @@ async def test_openapi_exposes_database_backed_routes():
         "/api/me/perfil",
         "/api/me/senha",
         "/api/me/agenda",
+        "/api/me/eventos",
         "/api/me/notificacoes",
         "/api/me/denuncias",
         "/api/denuncias",
