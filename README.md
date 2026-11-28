@@ -89,8 +89,10 @@ O arquivo `devops/.env` é ignorado pelo Git. Nunca versione credenciais reais.
 | Variável | Padrão no exemplo | Descrição |
 | --- | --- | --- |
 | `POSTGRES_DB` | `ilharole` | Nome do banco criado pelo PostgreSQL |
-| `POSTGRES_USER` | `ilharole` | Usuário do banco |
-| `POSTGRES_PASSWORD` | `change-me-in-local-env` | Senha local do banco |
+| `POSTGRES_USER` | `ilharole` | Usuário owner do banco (migrações e administração; a API não o usa) |
+| `POSTGRES_PASSWORD` | `change-me-in-local-env` | Senha do owner do banco |
+| `ILHAROLE_APP_USER` | `ilharole_app` | Papel de menor privilégio (DML) com que a API conecta |
+| `ILHAROLE_APP_PASSWORD` | `change-me-app` | Senha do papel da API |
 | `POSTGRES_HOST` | `db` | Host do banco na rede interna do Compose |
 | `POSTGRES_PORT` | `5432` | Porta interna do PostgreSQL |
 | `API_PORT` | `8000` | Porta da API no host |

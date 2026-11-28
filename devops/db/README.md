@@ -11,8 +11,8 @@ O catálogo completo de recursos está em [`FEATURES.md`](FEATURES.md).
 | Host (dentro dos contêineres) | `db` |
 | Porta interna | `5432` |
 | Banco | `POSTGRES_DB` (padrão `ilharole`) |
-| Usuário owner | `POSTGRES_USER` (padrão `ilharole`) |
-| Papel da aplicação | `ILHAROLE_APP_USER` (padrão `ilharole_app`) |
+| Usuário owner (migrações e administração) | `POSTGRES_USER` (padrão `ilharole`) |
+| Papel da aplicação (usado pela API) | `ILHAROLE_APP_USER` (padrão `ilharole_app`) |
 | Papel somente leitura | `ILHAROLE_READONLY_USER` (padrão `ilharole_readonly`) |
 | Senhas | `devops/.env` |
 
@@ -37,6 +37,11 @@ docker compose -f devops/docker-compose.yml exec db \
 Para usar DBeaver, psql ou outro cliente no host, conecte em
 `localhost:${POSTGRES_EXPOSE_PORT}` (padrão `5432`) com as credenciais do
 `devops/.env`.
+
+A API conecta ao banco com o papel `ILHAROLE_APP_USER` (DML em `app`, sem DDL e
+sem acesso a `audit`). O owner (`POSTGRES_USER`) é usado apenas por migrações,
+seed, backup e administração. Em um volume já existente, rode `db-roles` antes
+de subir a API para garantir que o papel e seus grants existam.
 
 ## Inicialização x migrações
 

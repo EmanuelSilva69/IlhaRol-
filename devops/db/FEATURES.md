@@ -124,8 +124,8 @@ Conecte em `localhost:5432` com `POSTGRES_USER`/`POSTGRES_PASSWORD`.
 
 | Papel | Uso |
 | --- | --- |
-| `POSTGRES_USER` (ex.: `ilharole`) | owner/superusuário local, usado pelas migrações |
-| `ILHAROLE_APP_USER` (ex.: `ilharole_app`) | DML em `app`, leitura em `analytics` |
+| `POSTGRES_USER` (ex.: `ilharole`) | owner/superusuário local, usado só por migrações e administração |
+| `ILHAROLE_APP_USER` (ex.: `ilharole_app`) | DML em `app`, leitura em `analytics`; é o papel com que a API conecta |
 | `ILHAROLE_READONLY_USER` (ex.: `ilharole_readonly`) | leitura em `app`, `analytics` e `audit` |
 
 As senhas vêm de `devops/.env`. Em um volume já existente, os papéis não são

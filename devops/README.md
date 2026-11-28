@@ -110,8 +110,8 @@ docker compose -f devops/docker-compose.yml up -d --build web
 | Variável | Padrão | Uso |
 | --- | --- | --- |
 | `POSTGRES_DB` | `ilharole` | Banco criado pelo PostgreSQL |
-| `POSTGRES_USER` | `ilharole` | Usuário owner do banco |
-| `POSTGRES_PASSWORD` | `change-me-in-local-env` | Senha local |
+| `POSTGRES_USER` | `ilharole` | Usuário owner do banco (migrações e administração; a API não o usa) |
+| `POSTGRES_PASSWORD` | `change-me-in-local-env` | Senha do owner |
 | `POSTGRES_HOST` | `db` | Host interno usado pela API |
 | `POSTGRES_PORT` | `5432` | Porta interna |
 | `API_PORT` | `8000` | Porta da API no host |
@@ -127,8 +127,8 @@ docker compose -f devops/docker-compose.yml up -d --build web
 | `DB_POOL_RECYCLE` | `1800` | Reciclagem de conexões (segundos) |
 | `DB_CONNECT_TIMEOUT` | `5` | Timeout de conexão com o banco (segundos) |
 | `DB_STATEMENT_CACHE_SIZE` | `100` | Cache de prepared statements do asyncpg; use `0` com PgBouncer em transaction |
-| `ILHAROLE_APP_USER` | `ilharole_app` | Papel DML da aplicação |
-| `ILHAROLE_APP_PASSWORD` | `change-me-app` | Senha do papel da aplicação |
+| `ILHAROLE_APP_USER` | `ilharole_app` | Papel DML usado pela API para conectar ao banco |
+| `ILHAROLE_APP_PASSWORD` | `change-me-app` | Senha do papel da API |
 | `ILHAROLE_READONLY_USER` | `ilharole_readonly` | Papel somente leitura |
 | `ILHAROLE_READONLY_PASSWORD` | `change-me-readonly` | Senha do papel somente leitura |
 | `TZ` | `America/Fortaleza` | Fuso do banco e dos backups |
@@ -207,6 +207,6 @@ Assim, cada imagem instala apenas as dependências da sua aplicação.
 - **Porta ocupada:** altere `API_PORT` ou `WEB_PORT` no `devops/.env` e recrie os serviços.
 - **Variáveis vazias:** confirme que `devops/.env` existe e foi criado a partir de `.env.example`.
 - **Mudanças no banco não aparecem:** scripts de `db/init/` só rodam em volume novo. Use migrações (`db-migrate`) para evoluir o schema; `down -v` recria tudo e apaga dados.
-- **Papéis `ilharole_app`/`ilharole_readonly` ausentes:** o `02-roles.sh` só roda no volume novo. Execute `db-roles` ou recrie o volume.
+- **Papéis `ilharole_app`/`ilharole_readonly` ausentes:** o `02-roles.sh` só roda no volume novo. Execute `db-roles` ou recrie o volume. A API conecta como `ilharole_app`; sem o papel, ela falha com erro de autenticação.
 - **PgBouncer e prepared statements:** mantenha `PGBOUNCER_POOL_MODE=session` ou use `DB_STATEMENT_CACHE_SIZE=0` na API.
 - **Docker daemon indisponível:** inicie o Docker Desktop e aguarde o motor ficar pronto.
